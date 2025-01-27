@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  studentID   String   @unique
+  fullname    String
+  course_Year String
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parents     Parent[] // One student can have multiple parents (if needed)
+  attendances Attendance[] // A student can have multiple attendance records
+}
+
+model Parent {
+  id        String   @id @default(cuid())
+  fullname  String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students Student[] // A parent can have multiple students (if needed)
+}
+
+model Attendance {
+  id     String   @id @default(cuid())
+  date   DateTime @default(now()) // Track the specific attendance date
+  status String //  "Present", "Absent",
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+}
