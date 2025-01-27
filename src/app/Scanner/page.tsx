@@ -5,10 +5,12 @@ import { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner"
 import React, { useEffect, useState } from "react";
 import { sendEmail } from "../actions/send-email";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Scanner = () => {
 	const [result, setResult] = useState("Scan your QR code");
-	const scan_interval = 1000;
+	const scan_interval = 2000;
 	let lastScanTime = 0;
 	let isPaused = false;
 
@@ -41,7 +43,7 @@ const Scanner = () => {
 			// Send an email
 			try {
 				await sendEmail(decodedText); //
-				toast.success("Present!");
+				toast.success("Present !");
 			} catch (err) {
 				toast.error("Failed to scan present !");
 				console.error("Email sending error:", err);
@@ -72,14 +74,16 @@ const Scanner = () => {
 	}, []);
 
 	return (
-		<div className="bg-slate-500">
-			<div className="flex min-h-screen justify-center items-center gap-6">
-				<div id="reader"> </div>
+		<div className=" flex flex-col min-h-screen justify-center items-center gap-6 bg-slate-500">
+			<div id="reader"> </div>
 
-				<div className="w-[250px]">
-					<h3> {result} </h3>
-				</div>
+			<div className="w-[250px] flex justify-center items-center">
+				<h3 className="text-2xl font-bold"> {result} </h3>
 			</div>
+
+			<Link href={"/"}>
+				<Button> cancel</Button>
+			</Link>
 		</div>
 	);
 };

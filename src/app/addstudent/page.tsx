@@ -18,6 +18,7 @@ import { addStudent } from "../actions/addStudent";
 import toast from "react-hot-toast";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const AddStudent = () => {
 	const [fullname, setFullname] = useState("");
@@ -27,6 +28,8 @@ const AddStudent = () => {
 	const [email, setEmail] = useState("");
 	const [submitting, setSubmitting] = useState(false);
 	const [showQRCode, setShowQRCode] = useState(false);
+
+	const router = useRouter();
 
 	const handleSubmit = async () => {
 		setSubmitting(true);
@@ -41,12 +44,7 @@ const AddStudent = () => {
 
 			if (result.success) {
 				toast.success("Student added successfully!");
-
-				setFullname("");
-				setCourseYear("");
-				setStudentId("");
-				setParents("");
-				setEmail("");
+				router.push("/");
 			} else {
 				toast.error(result.error || "Failed to add student");
 			}
@@ -59,7 +57,7 @@ const AddStudent = () => {
 	};
 
 	return (
-		<div className="min-h-screen flex justify-center items-center">
+		<div className="min-h-screen flex flex-col gap-2 justify-center items-center">
 			<Card className="w-[350px]">
 				<CardHeader>
 					<CardTitle className="text-4xl">Add new student</CardTitle>
@@ -131,7 +129,7 @@ const AddStudent = () => {
 					)}
 				</CardFooter>
 			</Card>
-			<div className="min-h-screen flex flex-col justify-center items-center">
+			<div className=" flex flex-col justify-center items-center">
 				{showQRCode && (
 					<div className="flex flex-col justify-center items-center">
 						<div style={{ background: "white", padding: "16px" }}>
