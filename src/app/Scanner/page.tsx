@@ -74,7 +74,7 @@ const Scanner = () => {
 	}, []);
 
 	return (
-		<div className=" flex flex-col min-h-screen justify-center items-center gap-6 bg-slate-500">
+		<div className=" flex flex-col min-h-screen justify-center items-center gap-6 ">
 			<div id="reader"> </div>
 
 			<div className="w-[250px] flex justify-center items-center">

@@ -33,7 +33,7 @@ model Parent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  students Student[] // A parent can have multiple students (if needed)
+  students Student[] // A parent can have multiple students 
 }
 
 model Attendance {
@@ -46,4 +46,12 @@ model Attendance {
 
   student   Student @relation(fields: [studentId], references: [id])
   studentId String
+}
+
+model Admin {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String    @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

@@ -1,3 +1,5 @@
+"use server";
+
 export async function sendEmail(studentId: string) {
 	try {
 		const response = await fetch("/api/emails", {
@@ -19,7 +21,6 @@ export async function sendEmail(studentId: string) {
 		console.log("Email sent successfully:", data);
 
 		return { success: true, data };
-		
 	} catch (error) {
 		console.error("Error sending email:", error);
 		return {
