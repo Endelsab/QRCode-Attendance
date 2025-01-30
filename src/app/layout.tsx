@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/navbar";
+import AppSidebar from "@/components/Sidebar";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -31,7 +32,16 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased `}>
 				<div className="min-h-screen">
 					<Navbar />
-					{children}
+
+					<div className="flex ">
+						<div className="basis-1/3 mt-5 ">
+							<div className="flex justify-center items-center">
+								<AppSidebar />
+							</div>
+						</div>
+
+						<div className="basis-2/3 mt-5 px-4">{children}</div>
+					</div>
 				</div>
 
 				<Toaster />

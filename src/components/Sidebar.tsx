@@ -18,10 +18,12 @@ function AppSidebar() {
 					</div>
 				</Link>
 
-				<div className="flex gap-2 border-b hover:bg-slate-100 rounded-sm p-2 cursor-pointer ">
-					<ChartAreaIcon className="size-4" />
-					<p className="">Chart</p>
-				</div>
+				<Link href={"analytics"}>
+					<div className="flex gap-2 border-b hover:bg-slate-100 rounded-sm p-2 cursor-pointer ">
+						<ChartAreaIcon className="size-4" />
+						<p className="">Chart</p>
+					</div>
+				</Link>
 			</div>
 			<div className="mt-20 ">
 				<Button className="w-full">Logout</Button>

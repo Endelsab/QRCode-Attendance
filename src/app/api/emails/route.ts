@@ -1,7 +1,7 @@
-import prisma from "@/app/lib/prisma";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
-import { EmailTemplate } from "@/app/emails/email-template";
+import prisma from "@/lib/prisma";
+import { EmailTemplate } from "@/components/email-template";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 			from: "onboarding@resend.dev",
 			to: "wendelsabayo999@gmail.com",
 			// to: student.parents[0]?.email,
-			subject: "Attendance",
+			subject: "School Attendance",
 			react: EmailTemplate(student.fullname),
 		});
 

@@ -10,12 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EyeClosedIcon } from "lucide-react";
+import { EyeClosedIcon, Loader2Icon } from "lucide-react";
 
 import React, { useState } from "react";
 
 function login() {
 	const [showPassword, setShowPassword] = useState(false);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [submitting, setSubmitting] = useState(false);
+
 	return (
 		<div className=" min-h-screen flex items-center justify-center">
 			<Card className="w-[350px]">
@@ -27,11 +31,19 @@ function login() {
 						<div className="grid w-full items-center gap-4">
 							<div className="flex flex-col space-y-1.5">
 								<Label htmlFor="admin">email</Label>
-								<Input id="admin" type="email" required={true} />
+								<Input
+									id="admin"
+									type="email"
+									required={true}
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
 							</div>
 							<div className="flex flex-col space-y-1.5">
 								<Label htmlFor="password">password</Label>
 								<Input
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
 									type={showPassword ? "text" : "password"}
 									required={true}
 									id="password"
@@ -46,7 +58,11 @@ function login() {
 				</CardContent>
 
 				<CardFooter className="flex justify-center">
-					<Button className="w-full">Login</Button>
+					{submitting ? (
+						<Loader2Icon className="size-4 mr-2 animate-spin" />
+					) : (
+						<Button>Login</Button>
+					)}
 				</CardFooter>
 			</Card>
 		</div>

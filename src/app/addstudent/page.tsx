@@ -1,5 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import QRCode from "react-qr-code";
+import { Loader2Icon } from "lucide-react";
+
+import { addStudent } from "../actions/addStudent";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -11,18 +19,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-
-import QRCode from "react-qr-code";
-import { addStudent } from "../actions/addStudent";
-import toast from "react-hot-toast";
-import { Loader2Icon } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const AddStudent = () => {
 	const [fullname, setFullname] = useState("");
-	const [course_Year, setCourseYear] = useState("");
+	const [courseYear, setCourseYear] = useState("");
 	const [studentId, setStudentId] = useState("");
 	const [parentsName, setParents] = useState("");
 	const [email, setEmail] = useState("");
@@ -32,11 +32,16 @@ const AddStudent = () => {
 	const router = useRouter();
 
 	const handleSubmit = async () => {
+		if (!fullname || !courseYear || !studentId || !parentsName || !email) {
+			toast.error("All fields are required!");
+			return;
+		}
+
 		setSubmitting(true);
 		try {
 			const result = await addStudent({
 				fullname,
-				course_Year,
+				course_Year: courseYear,
 				studentId,
 				parentsName,
 				email,
@@ -57,88 +62,80 @@ const AddStudent = () => {
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col gap-2 justify-center items-center">
+		<div className="min-h-screen flex  gap-4 justify-center items-center">
 			<Card className="w-[350px]">
 				<CardHeader>
-					<CardTitle className="text-4xl">Add new student</CardTitle>
+					<CardTitle className="text-2xl">Add New Student</CardTitle>
 					<CardDescription>
-						generate new qr code for new student
+						Generate a QR code for the new student
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form>
-						<div className="grid w-full items-center gap-4">
-							<div className="flex flex-col space-y-1.5">
-								<Label htmlFor="name">Fullname</Label>
-								<Input
-									required={true}
-									id="name"
-									value={fullname}
-									onChange={(e) => setFullname(e.target.value)}
-								/>
-							</div>
-							<div className="flex flex-col space-y-1.5">
-								<Label htmlFor="course/year">course/year</Label>
-								<Input
-									required={true}
-									id="course/year"
-									value={course_Year}
-									onChange={(e) => setCourseYear(e.target.value)}
-								/>
-							</div>
-							<div className="flex flex-col space-y-1.5">
-								<Label htmlFor="Student ID">Student ID</Label>
-								<Input
-									required={true}
-									id="Student ID"
-									value={studentId}
-									onChange={(e) => setStudentId(e.target.value)}
-								/>
-							</div>
-							<div className="flex flex-col space-y-1.5">
-								<Label htmlFor="Parents">Parents</Label>
-								<Input
-									required={true}
-									id="Parents"
-									value={parentsName}
-									onChange={(e) => setParents(e.target.value)}
-								/>
-							</div>
-							<div className="flex flex-col space-y-1.5">
-								<Label htmlFor="Parent's email">Parent's email address</Label>
-								<Input
-									required={true}
-									id="Parent's email"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-								/>
-							</div>
+					<form onSubmit={(e) => e.preventDefault()}>
+						<div className="grid w-full gap-4">
+							{[
+								{ label: "Fullname", value: fullname, setValue: setFullname },
+								{
+									label: "Course/Year",
+									value: courseYear,
+									setValue: setCourseYear,
+								},
+								{
+									label: "Student ID",
+									value: studentId,
+									setValue: setStudentId,
+								},
+								{
+									label: "Parent's Name",
+									value: parentsName,
+									setValue: setParents,
+								},
+								{ label: "Parent's Email", value: email, setValue: setEmail },
+							].map(({ label, value, setValue }) => (
+								<div key={label} className="flex flex-col space-y-1.5">
+									<Label htmlFor={label}>{label}</Label>
+									<Input
+										required
+										id={label}
+										value={value}
+										onChange={(e) => setValue(e.target.value)}
+									/>
+								</div>
+							))}
 						</div>
 					</form>
 				</CardContent>
 				<CardFooter className="flex justify-between">
-					<Link href={"/"}>
+					<Link href="/">
 						<Button variant="outline">Cancel</Button>
 					</Link>
-					<Button onClick={() => setShowQRCode(!showQRCode)}>QR Code</Button>
 
-					{submitting ? (
-						<Loader2Icon className="size-4 mr-2 animate-spin" />
-					) : (
-						<Button onClick={handleSubmit}>Save</Button>
-					)}
+					<Button
+						onClick={() => {
+							if (studentId) setShowQRCode(!showQRCode);
+							else toast.error("Please enter Student ID first!");
+						}}>
+						QR Code
+					</Button>
+
+					<Button onClick={handleSubmit} disabled={submitting}>
+						{submitting ? (
+							<Loader2Icon className="size-4 animate-spin" />
+						) : (
+							"Save"
+						)}
+					</Button>
 				</CardFooter>
 			</Card>
-			<div className=" flex flex-col justify-center items-center">
-				{showQRCode && (
-					<div className="flex flex-col justify-center items-center">
-						<div style={{ background: "white", padding: "16px" }}>
-							<QRCode value={studentId} />
-						</div>
-						<p className="text-bold ">{fullname}</p>
+
+			{showQRCode && studentId && (
+				<div className="flex flex-col justify-center items-center mt-4">
+					<div className="bg-white p-4 rounded-lg shadow">
+						<QRCode value={studentId} />
 					</div>
-				)}
-			</div>
+					<p className="font-bold mt-2">{fullname}</p>
+				</div>
+			)}
 		</div>
 	);
 };

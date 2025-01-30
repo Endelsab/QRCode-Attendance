@@ -5,8 +5,7 @@ import { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner"
 import React, { useEffect, useState } from "react";
 import { sendEmail } from "../actions/send-email";
 import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import PresentTable from "@/components/presentTable";
 
 const Scanner = () => {
 	const [result, setResult] = useState("Scan your QR code");
@@ -15,18 +14,16 @@ const Scanner = () => {
 	let isPaused = false;
 
 	const config: Html5QrcodeScannerConfig = {
-		fps: 10, // Scanning frames per second
-		qrbox: { width: 300, height: 300 }, // Scanning area
+		fps: 10,
+		qrbox: { width: 300, height: 300 },
 	};
 
 	useEffect(() => {
 		const scanner = new Html5QrcodeScanner("reader", config, false);
 
-		// Success callback for scanning
 		async function success(decodedText: string) {
 			const now = Date.now();
 
-			// Check if the scan is within the allowed interval
 			if (now - lastScanTime < scan_interval) {
 				console.log("Scan ignored to prevent multiple triggers.");
 				if (!isPaused) {
@@ -40,16 +37,14 @@ const Scanner = () => {
 			setResult(decodedText);
 			console.log("Scanned Data:", decodedText);
 
-			// Send an email
 			try {
-				await sendEmail(decodedText); //
+				await sendEmail(decodedText);
 				toast.success("Present !");
 			} catch (err) {
 				toast.error("Failed to scan present !");
 				console.error("Email sending error:", err);
 			}
 
-			// Resume scanning after the rate limit interval
 			setTimeout(() => {
 				if (isPaused) {
 					scanner.resume();
@@ -58,7 +53,6 @@ const Scanner = () => {
 			}, scan_interval);
 		}
 
-		// Error callback for scanning
 		function error(err: any) {
 			console.warn("Scan error:", err);
 		}
@@ -74,16 +68,18 @@ const Scanner = () => {
 	}, []);
 
 	return (
-		<div className=" flex flex-col min-h-screen justify-center items-center gap-6 ">
-			<div id="reader"> </div>
+		<div className="flex gap-6 justify-between ">
+			<div className=" flex flex-col  w-[400px]   gap-2 ">
+				<div id="reader"> </div>
 
-			<div className="w-[250px] flex justify-center items-center">
-				<h3 className="text-2xl font-bold"> {result} </h3>
+				<div className="w-[250px] flex justify-center items-center">
+					<h1 className="text-xl font-bold"> {result} </h1>
+				</div>
 			</div>
 
-			<Link href={"/"}>
-				<Button> cancel</Button>
-			</Link>
+			<div className=" flex justify-center w-[400px] h-[400px]  mr-10 ">
+				<PresentTable />
+			</div>
 		</div>
 	);
 };

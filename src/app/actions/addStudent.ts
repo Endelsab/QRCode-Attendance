@@ -1,9 +1,9 @@
 "use server";
 
+import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import prisma from "../lib/prisma";
 
-type Datainterface = {
+type StudentData = {
 	fullname: string;
 	course_Year: string;
 	studentId: string;
@@ -17,13 +17,13 @@ export async function addStudent({
 	studentId,
 	parentsName,
 	email,
-}: Datainterface) {
+}: StudentData) {
 	try {
 		const newStudent = await prisma.student.create({
 			data: {
 				fullname,
 				course_Year,
-				studentID: studentId,
+				studentID: studentId, // Ensure this matches the Prisma schema
 				parents: {
 					create: {
 						fullname: parentsName,
@@ -31,13 +31,19 @@ export async function addStudent({
 					},
 				},
 			},
+			include: {
+				parents: true, // Include parents data in response
+			},
 		});
 
-		revalidatePath("/"); // purge the cache for the home page
-		return { success: true, newStudent };
+		// ✅ Revalidate Cache (ensure UI updates)
+		revalidatePath("/");
+
+		return { success: true, data: newStudent };
 	} catch (error) {
 		console.error("Failed to add new student:", error);
 
+		// ✅ Return JSON response for API compatibility
 		return {
 			success: false,
 			error:
