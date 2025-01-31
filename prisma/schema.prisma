@@ -37,14 +37,13 @@ model Parent {
 }
 
 model Attendance {
-  id     String   @id @default(cuid())
-  date   DateTime @default(now()) // Track the specific attendance date
-  status String //  "Present", "Absent",
+  id   String   @id @default(cuid())
+  date DateTime @default(now()) // Track the specific attendance date
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student   Student @relation(fields: [studentId], references: [id])
+  student   Student @relation(fields: [studentId], references: [studentID])
   studentId String
 }
 

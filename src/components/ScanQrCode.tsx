@@ -3,20 +3,50 @@
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner";
 import React, { useEffect, useState } from "react";
-import { sendEmail } from "../actions/send-email";
 import toast from "react-hot-toast";
-import PresentTable from "@/components/presentTable";
 
 const Scanner = () => {
 	const [result, setResult] = useState("Scan your QR code");
-	const scan_interval = 2000;
+	const scan_interval = 1000;
 	let lastScanTime = 0;
 	let isPaused = false;
 
 	const config: Html5QrcodeScannerConfig = {
 		fps: 10,
-		qrbox: { width: 300, height: 300 },
+		qrbox: { width: 250, height: 250 },
 	};
+
+	async function sendEmail(studentId: string) {
+		try {
+			const response = await fetch("/api/emails", {
+				method: "POST",
+				body: JSON.stringify({ studentId }),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				console.error("Failed to send email:", error);
+				toast.error("Failed to send email");
+				throw new Error(error.message || "Failed to send email");
+			}
+
+			const data = await response.json();
+			console.log("Email sent successfully:", data);
+			toast.success("Present never absent ");
+
+			return { success: true, data };
+		} catch (error) {
+			console.error("Error sending email:", error);
+			toast.error("Error sending email");
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "Unknown error",
+			};
+		}
+	}
 
 	useEffect(() => {
 		const scanner = new Html5QrcodeScanner("reader", config, false);
@@ -37,13 +67,8 @@ const Scanner = () => {
 			setResult(decodedText);
 			console.log("Scanned Data:", decodedText);
 
-			try {
-				await sendEmail(decodedText);
-				toast.success("Present !");
-			} catch (err) {
-				toast.error("Failed to scan present !");
-				console.error("Email sending error:", err);
-			}
+			// Call sendEmail function with scanned student ID
+			await sendEmail(decodedText);
 
 			setTimeout(() => {
 				if (isPaused) {
@@ -68,17 +93,10 @@ const Scanner = () => {
 	}, []);
 
 	return (
-		<div className="flex gap-6 justify-between ">
-			<div className=" flex flex-col  w-[400px]   gap-2 ">
-				<div id="reader"> </div>
-
-				<div className="w-[250px] flex justify-center items-center">
-					<h1 className="text-xl font-bold"> {result} </h1>
-				</div>
-			</div>
-
-			<div className=" flex justify-center w-[400px] h-[400px]  mr-10 ">
-				<PresentTable />
+		<div className="flex flex-col w-[400px] h-[400px] gap-2">
+			<div id="reader"> </div>
+			<div className="w-[250px] flex justify-center items-center">
+				<h1 className="text-xl font-bold">{result}</h1>
 			</div>
 		</div>
 	);

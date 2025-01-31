@@ -12,7 +12,7 @@ function Navbar() {
 						<Button>Dashboard</Button>
 					</Link>
 
-					<Button>Logout</Button>
+					<Button variant={"destructive"}>Logout</Button>
 				</div>
 			</div>
 		</nav>

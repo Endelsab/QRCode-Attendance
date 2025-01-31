@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { EmailTemplate } from "@/components/email-template";
 
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
 
 		if (!studentId) {
 			console.log(studentId);
-			return NextResponse.json({ error: "no student id" }, { status: 400 });
+			return NextResponse.json({ error: "no student id" }, { status: 404 });
 		}
 
 		// Query parent details using StudentId
@@ -51,8 +52,16 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
+		const attendance = await prisma.attendance.create({
+			data: {
+				studentId,
+			},
+		});
+
+	
+
 		return NextResponse.json(
-			{ message: "email sent successfully", data },
+			{ message: "email sent successfully", data, attendance },
 			{ status: 201 },
 		);
 	} catch (error: any) {
