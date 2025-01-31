@@ -2,14 +2,14 @@
 
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 const Scanner = () => {
 	const [result, setResult] = useState("Scan your QR code");
-	const scan_interval = 1000;
-	let lastScanTime = 0;
-	let isPaused = false;
+	const scanInterval = 1000;
+	const lastScanTimeRef = useRef(0); // 🔹 Persist last scan time
+	const isPausedRef = useRef(false); // 🔹 Persist pause state
 
 	const config: Html5QrcodeScannerConfig = {
 		fps: 10,
@@ -35,7 +35,7 @@ const Scanner = () => {
 
 			const data = await response.json();
 			console.log("Email sent successfully:", data);
-			toast.success("Present never absent ");
+			toast.success("Present never absent!");
 
 			return { success: true, data };
 		} catch (error) {
@@ -54,28 +54,27 @@ const Scanner = () => {
 		async function success(decodedText: string) {
 			const now = Date.now();
 
-			if (now - lastScanTime < scan_interval) {
+			if (now - lastScanTimeRef.current < scanInterval) {
 				console.log("Scan ignored to prevent multiple triggers.");
-				if (!isPaused) {
+				if (!isPausedRef.current) {
 					scanner.pause();
-					isPaused = true;
+					isPausedRef.current = true;
 				}
 				return;
 			}
 
-			lastScanTime = now;
+			lastScanTimeRef.current = now; // 🔹 Update last scan time
 			setResult(decodedText);
 			console.log("Scanned Data:", decodedText);
 
-			// Call sendEmail function with scanned student ID
 			await sendEmail(decodedText);
 
 			setTimeout(() => {
-				if (isPaused) {
+				if (isPausedRef.current) {
 					scanner.resume();
-					isPaused = false;
+					isPausedRef.current = false;
 				}
-			}, scan_interval);
+			}, scanInterval);
 		}
 
 		function error(err: any) {
@@ -84,7 +83,6 @@ const Scanner = () => {
 
 		scanner.render(success, error);
 
-		// Cleanup on component unmount
 		return () => {
 			scanner
 				.clear()
@@ -94,7 +92,7 @@ const Scanner = () => {
 
 	return (
 		<div className="flex flex-col w-[400px] h-[400px] gap-2">
-			<div id="reader"> </div>
+			<div id="reader"></div>
 			<div className="w-[250px] flex justify-center items-center">
 				<h1 className="text-xl font-bold">{result}</h1>
 			</div>
