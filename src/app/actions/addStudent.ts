@@ -11,7 +11,7 @@ type StudentData = {
 	email: string;
 };
 
-export async function addStudent({
+async function AddNewStudent({
 	fullname,
 	course_Year,
 	studentId,
@@ -51,3 +51,4 @@ export async function addStudent({
 		};
 	}
 }
+export default AddNewStudent;

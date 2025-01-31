@@ -14,7 +14,7 @@ import { EyeClosedIcon, Loader2Icon } from "lucide-react";
 
 import React, { useState } from "react";
 
-function login() {
+function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -69,4 +69,4 @@ function login() {
 	);
 }
 
-export default login;
+export default Login;

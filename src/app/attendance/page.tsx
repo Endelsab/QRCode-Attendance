@@ -8,11 +8,12 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import Scanner from "@/components/ScanQrCode";
+import { GetTodaysAttendance } from "../actions/getTodaysAttendance";
 
-import { getTodaysAttendance } from "../actions/getTodaysAttendance";
+
 
 export default async function Attendance() {
-	const presentsToday = await getTodaysAttendance();
+	const presentsToday = await GetTodaysAttendance();
 
 	return (
 		<div className="flex flex-row">

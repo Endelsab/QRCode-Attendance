@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import QRCode from "react-qr-code";
 import { Loader2Icon } from "lucide-react";
 
-import { addStudent } from "../actions/addStudent";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -19,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import AddNewStudent from "../actions/addStudent";
 
 const AddStudent = () => {
 	const [fullname, setFullname] = useState("");
@@ -39,7 +39,7 @@ const AddStudent = () => {
 
 		setSubmitting(true);
 		try {
-			const result = await addStudent({
+			const result = await AddNewStudent({
 				fullname,
 				course_Year: courseYear,
 				studentId,

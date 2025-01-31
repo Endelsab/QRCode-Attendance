@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 
-export async function getTodaysAttendance() {
+export async function GetTodaysAttendance() {
 	const startOfDay = new Date();
 	startOfDay.setHours(7, 0, 0, 0);
 
