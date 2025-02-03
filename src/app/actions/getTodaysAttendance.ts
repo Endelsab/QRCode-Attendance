@@ -3,26 +3,37 @@
 import prisma from "@/lib/prisma";
 
 export async function GetTodaysAttendance() {
-	const startOfDay = new Date();
-	startOfDay.setHours(7, 0, 0, 0);
+	// const startOfDay = new Date();
+	// startOfDay.setHours(7, 0, 0, 0);
 
-	const endOfDay = new Date();
-	endOfDay.setHours(8, 0, 0, 0);
+	// const endOfDay = new Date();
+	// endOfDay.setHours(8, 0, 0, 0);
 
-	const presentToday = await prisma.attendance.findMany({
-		//where: {
-		//createdAt: {
-		//	gte: startOfDay,
-		//	lte: endOfDay,
-		//},
-		//},
-		orderBy: {
-			createdAt: "desc",
-		},
-		include: {
-			student: true,
-		},
-	});
+	try {
+		const presentToday = await prisma.attendance.findMany({
+			//where: {
+			//createdAt: {
+			//	gte: startOfDay,
+			//	lte: endOfDay,
+			//},
+			//},
+			orderBy: {
+				createdAt: "desc",
+			},
+			include: {
+				student: {
+					select: {
+						id: true,
+						fullname: true,
+						course_Year: true,
+					},
+				},
+			},
+		});
 
-	return presentToday;
+		return presentToday;
+	} catch (error) {
+		console.log("Error in getPosts", error);
+		throw new Error("Failed to fetch attendance");
+	}
 }

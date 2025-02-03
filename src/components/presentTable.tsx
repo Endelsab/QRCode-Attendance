@@ -1,42 +1,52 @@
+import { GetTodaysAttendance } from "@/app/actions/getTodaysAttendance";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
+type Presents = Awaited<ReturnType<typeof GetTodaysAttendance>>;
 
-// type StudentType = {
-// 	id: string;
-// 	fullname: string;
-// 	course_Year: string;
-// };
+function PresentTable({ presents }: { presents: Presents }) {
+	return (
+		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
+			<Card className="w-screen overflow-x-hidden">
+				<CardHeader>
+					<CardTitle className="text-xl font-bold">
+						Today's Present{" "}
+						<span className="text-sm font-thin ml-5 ">
+							Total: {presents.length} {/* ✅ Displays correct total */}
+						</span>
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Fullname</TableHead>
+								<TableHead>Course/Year</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{/* ✅ Correctly iterates over the presents array */}
+							{presents.map((present) => (
+								<TableRow key={present.id}>
+									<TableCell className="font-medium">
+										{present.student.fullname}
+									</TableCell>
+									<TableCell>{present.student.course_Year}</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</CardContent>
+			</Card>
+		</div>
+	);
+}
 
-// function PresentTable({ student }: { student: StudentType }) {
-// 	return (
-// 		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
-// 			<Card className="w-screen overflow-x-hidden">
-// 				<CardHeader>
-// 					<CardTitle className="text-xl font-bold">
-// 						Today's Present{" "}
-// 						<span className="text-lg font-thin ml-20">Total: {}</span>
-// 					</CardTitle>
-// 				</CardHeader>
-// 				<CardContent>
-// 					<Table>
-// 						<TableHeader>
-// 							<TableRow>
-// 								<TableHead>Fullname</TableHead>
-// 								<TableHead>Course/Year</TableHead>
-// 							</TableRow>
-// 						</TableHeader>
-// 						<TableBody>
-// 							<TableRow key={student.id}>
-// 								<TableCell className="font-medium">
-// 									{student.fullname}
-// 								</TableCell>
-// 								<TableCell>{student.course_Year}</TableCell>
-// 							</TableRow>
-// 						</TableBody>
-// 					</Table>
-// 				</CardContent>
-// 			</Card>
-// 		</div>
-// 	);
-// }
-
-// export default PresentTable;
+export default PresentTable;

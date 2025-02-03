@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
 			},
 		});
 
+		
+
 		return NextResponse.json(
 			{ message: "email sent successfully", data, attendance },
 			{ status: 201 },

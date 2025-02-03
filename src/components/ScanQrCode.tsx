@@ -77,7 +77,7 @@ const Scanner = () => {
 			}, scanInterval);
 		}
 
-		function error(err: any) {
+		function error(err: string) {
 			console.warn("Scan error:", err);
 		}
 
