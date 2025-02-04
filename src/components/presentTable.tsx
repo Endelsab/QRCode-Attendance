@@ -1,4 +1,4 @@
-import { GetTodaysAttendance } from "@/app/actions/getTodaysAttendance";
+import { GetTodaysAttendance } from "@/app/actions/GetTodaysAttendance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
@@ -7,10 +7,11 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table";``
 
 async function PresentTable() {
 	const presents = await GetTodaysAttendance();
+
 	return (
 		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
 			<Card className="w-screen overflow-x-hidden">
@@ -18,7 +19,7 @@ async function PresentTable() {
 					<CardTitle className="text-xl font-bold">
 						Today&apos;s Present{" "}
 						<span className="text-sm font-thin ml-2 ">
-							Total: {presents?.length} {/* ✅ Displays correct total */}
+							Total: {presents.length}
 						</span>
 					</CardTitle>
 				</CardHeader>
@@ -31,8 +32,7 @@ async function PresentTable() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{/* ✅ Correctly iterates over the presents array */}
-							{presents?.map((present) => (
+							{presents.map((present) => (
 								<TableRow key={present.id}>
 									<TableCell className="font-medium">
 										{present.student.fullname}
