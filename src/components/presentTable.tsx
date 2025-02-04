@@ -17,8 +17,8 @@ function PresentTable({ presents }: { presents: Presents }) {
 			<Card className="w-screen overflow-x-hidden">
 				<CardHeader>
 					<CardTitle className="text-xl font-bold">
-						Today's Present{" "}
-						<span className="text-sm font-thin ml-5 ">
+						Today&apos;s Present{" "}
+						<span className="text-sm font-thin ml-2 ">
 							Total: {presents.length} {/* ✅ Displays correct total */}
 						</span>
 					</CardTitle>
