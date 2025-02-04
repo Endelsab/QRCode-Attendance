@@ -9,9 +9,8 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
-type Presents = Awaited<ReturnType<typeof GetTodaysAttendance>>;
-
-function PresentTable({ presents }: { presents: Presents }) {
+async function PresentTable() {
+	const presents = await GetTodaysAttendance();
 	return (
 		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
 			<Card className="w-screen overflow-x-hidden">
@@ -19,7 +18,7 @@ function PresentTable({ presents }: { presents: Presents }) {
 					<CardTitle className="text-xl font-bold">
 						Today&apos;s Present{" "}
 						<span className="text-sm font-thin ml-2 ">
-							Total: {presents.length} {/* ✅ Displays correct total */}
+							Total: {presents?.length} {/* ✅ Displays correct total */}
 						</span>
 					</CardTitle>
 				</CardHeader>
@@ -33,7 +32,7 @@ function PresentTable({ presents }: { presents: Presents }) {
 						</TableHeader>
 						<TableBody>
 							{/* ✅ Correctly iterates over the presents array */}
-							{presents.map((present) => (
+							{presents?.map((present) => (
 								<TableRow key={present.id}>
 									<TableCell className="font-medium">
 										{present.student.fullname}
