@@ -80,7 +80,7 @@ const Scanner = () => {
 		return () => {
 			stopScanner();
 		};
-	}, []);
+	}, [startScanner]);
 
 	return (
 		<div className="flex flex-col w-[400px] h-[400px] gap-2">

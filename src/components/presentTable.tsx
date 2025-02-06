@@ -21,7 +21,6 @@ interface Present {
 
 export default async function PresentTable() {
 	const presents: Present[] = await GetTodaysAttendance();
-
 	return (
 		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
 			<Card className="w-screen overflow-x-hidden">
