@@ -1,4 +1,4 @@
-import { GetTodaysAttendance } from "@/app/actions/GetTodaysAttendance";
+import GetTodaysAttendance from "@/app/actions/GetTodaysAttendance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
