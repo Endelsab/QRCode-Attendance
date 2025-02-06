@@ -43,7 +43,6 @@ async function AddNewStudent({
 	} catch (error) {
 		console.error("Failed to add new student:", error);
 
-		// ✅ Return JSON response for API compatibility
 		return {
 			success: false,
 			error:

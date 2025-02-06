@@ -2,13 +2,12 @@ import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { EmailTemplate } from "@/components/email-template";
-
+import { revalidatePath } from "next/cache";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
 	try {
-		// Parse the request body to extract StudentId
 		const { studentId } = await req.json();
 
 		if (!studentId) {
@@ -16,7 +15,6 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "no student id" }, { status: 404 });
 		}
 
-		// Query parent details using StudentId
 		const student = await prisma.student.findUnique({
 			where: {
 				studentID: studentId,
@@ -35,7 +33,6 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "student not found" }, { status: 404 });
 		}
 
-		// Send email using Resend API
 		const { data, error } = await resend.emails.send({
 			from: "onboarding@resend.dev",
 			to: "wendelsabayo999@gmail.com",
@@ -58,7 +55,7 @@ export async function POST(req: NextRequest) {
 			},
 		});
 
-	
+		revalidatePath("/attendance");
 
 		return NextResponse.json(
 			{ message: "email sent successfully", data, attendance },

@@ -7,10 +7,20 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";``
+} from "@/components/ui/table";
 
-async function PresentTable() {
-	const presents = await GetTodaysAttendance();
+interface Student {
+	fullname: string;
+	course_Year: string;
+}
+
+interface Present {
+	id: string;
+	student?: Student;
+}
+
+export default async function PresentTable() {
+	const presents: Present[] = await GetTodaysAttendance();
 
 	return (
 		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
@@ -18,7 +28,7 @@ async function PresentTable() {
 				<CardHeader>
 					<CardTitle className="text-xl font-bold">
 						Today&apos;s Present{" "}
-						<span className="text-sm font-thin ml-2 ">
+						<span className="text-sm font-thin ml-2">
 							Total: {presents.length}
 						</span>
 					</CardTitle>
@@ -35,9 +45,9 @@ async function PresentTable() {
 							{presents.map((present) => (
 								<TableRow key={present.id}>
 									<TableCell className="font-medium">
-										{present.student.fullname}
+										{present.student?.fullname || "N/A"}
 									</TableCell>
-									<TableCell>{present.student.course_Year}</TableCell>
+									<TableCell>{present.student?.course_Year || "N/A"}</TableCell>
 								</TableRow>
 							))}
 						</TableBody>
@@ -47,5 +57,3 @@ async function PresentTable() {
 		</div>
 	);
 }
-
-export default PresentTable;
