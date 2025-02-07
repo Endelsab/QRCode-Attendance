@@ -1,7 +1,7 @@
 "use client";
 
 import { Html5Qrcode } from "html5-qrcode";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 
@@ -10,7 +10,7 @@ const Scanner = () => {
 	const [isScanning, setIsScanning] = useState(false);
 	const scannerRef = useRef<Html5Qrcode | null>(null);
 	const lastScanTimeRef = useRef(0);
-	const scanInterval = 2000;
+	const scanInterval = 1000;
 
 	async function sendEmail(studentId: string) {
 		try {
@@ -22,8 +22,10 @@ const Scanner = () => {
 
 			if (!response.ok) {
 				const error = await response.json();
-				toast.error("Failed to send email");
+				toast.error("Failed to scan || invalid QR Code");
 				throw new Error(error.message || "Failed to send email");
+			} else {
+				toast.success("Present never absent !");
 			}
 		} catch (error) {
 			console.error("Error sending email:", error);
@@ -52,8 +54,6 @@ const Scanner = () => {
 
 					lastScanTimeRef.current = now;
 					setResult(decodedText);
-					toast.success("Present never absent !");
-					console.log("Scanned Data:", decodedText);
 
 					await sendEmail(decodedText);
 				},
@@ -73,14 +73,6 @@ const Scanner = () => {
 			setIsScanning(false);
 		}
 	};
-
-	useEffect(() => {
-		startScanner();
-
-		return () => {
-			stopScanner();
-		};
-	}, [startScanner]);
 
 	return (
 		<div className="flex flex-col w-[400px] h-[400px] gap-2">
