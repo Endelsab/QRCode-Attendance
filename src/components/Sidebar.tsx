@@ -7,10 +7,13 @@ function AppSidebar() {
 		<div className="  w-[300px] h-[400px] shadow-lg  rounded-md flex flex-col p-4 ">
 			<h1 className="font-bold text-md p-4 ml-24">Menu</h1>
 			<div className="flex flex-col gap-5 p-2 mt-5 ">
-				<div className="flex gap-2 border-b hover:bg-slate-100 rounded-sm p-2 cursor-pointer ">
-					<Users2 className="size-4" />
-					<p className="">Students</p>
-				</div>
+				<Link href={"/students"}>
+					<div className="flex gap-2 border-b hover:bg-slate-100 rounded-sm p-2 cursor-pointer ">
+						<Users2 className="size-4" />
+						<p className="">Students</p>
+					</div>
+				</Link>
+
 				<Link href={"/attendance"}>
 					<div className="flex gap-2 border-b hover:bg-slate-100 rounded-sm p-2 cursor-pointer ">
 						<ContactRound className="size-4" />
@@ -19,7 +22,9 @@ function AppSidebar() {
 				</Link>
 			</div>
 			<div className=" mt-[140px] ">
-				<Button className="w-full">Logout</Button>
+				<Button variant={"destructive"} className="w-full">
+					Logout
+				</Button>
 			</div>
 		</div>
 	);

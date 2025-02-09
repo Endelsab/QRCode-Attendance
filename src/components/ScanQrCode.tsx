@@ -24,12 +24,9 @@ const Scanner = () => {
 				const error = await response.json();
 				toast.error("Failed to scan || invalid QR Code");
 				throw new Error(error.message || "Failed to send email");
-			} else {
-				toast.success("Present never absent !");
 			}
 		} catch (error) {
 			console.error("Error sending email:", error);
-			console.error("Error sending email");
 		}
 	}
 
@@ -51,11 +48,15 @@ const Scanner = () => {
 						console.log("Scan ignored to prevent multiple triggers.");
 						return;
 					}
-
 					lastScanTimeRef.current = now;
-					setResult(decodedText);
 
+					const audio = new Audio("/scan_beep.mp3");
+					audio.play();
+
+					setResult(decodedText);
 					await sendEmail(decodedText);
+
+					toast.success("Present never absent !");
 				},
 				(errorMessage) => {
 					console.warn("QR Code scan error:", errorMessage);

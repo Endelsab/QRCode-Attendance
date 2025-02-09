@@ -22,7 +22,9 @@ model Student {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  parents     Parent[] // One student can have multiple parents (if needed)
+  status String @default("Absent")
+
+  parents     ParentOnStudent[] // One student can have multiple parents (if needed)
   attendances Attendance[] // A student can have multiple attendance records
 }
 
@@ -33,7 +35,7 @@ model Parent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  students Student[] // A parent can have multiple students 
+  students ParentOnStudent[]
 }
 
 model Attendance {
@@ -43,8 +45,18 @@ model Attendance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student   Student @relation(fields: [studentId], references: [studentID])
+  student   Student @relation(fields: [studentId], references: [studentID], onDelete: Cascade)
   studentId String
+}
+
+model ParentOnStudent {
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+
+  parent   Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String
+
+  @@id([studentId, parentId]) // Composite Primary Key
 }
 
 model Admin {

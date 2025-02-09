@@ -23,21 +23,27 @@ async function AddNewStudent({
 			data: {
 				fullname,
 				course_Year,
-				studentID: studentId, // Ensure this matches the Prisma schema
-				parents: {
-					create: {
-						fullname: parentsName,
-						email,
-					},
-				},
-			},
-			include: {
-				parents: true, // Include parents data in response
+				studentID: studentId,
 			},
 		});
 
-		// ✅ Revalidate Cache (ensure UI updates)
-		revalidatePath("/");
+		const parent = await prisma.parent.upsert({
+			where: { email },
+			update: {},
+			create: {
+				fullname: parentsName,
+				email,
+			},
+		});
+
+		await prisma.parentOnStudent.create({
+			data: {
+				studentId: newStudent.id,
+				parentId: parent.id,
+			},
+		});
+
+		revalidatePath("/students");
 
 		return { success: true, data: newStudent };
 	} catch (error) {
@@ -50,4 +56,5 @@ async function AddNewStudent({
 		};
 	}
 }
+
 export default AddNewStudent;

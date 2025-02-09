@@ -12,16 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-
-// interface Student {
-// 	fullname: string;
-// 	course_Year: string;
-// }
-
-// interface Present {
-// 	id: string;
-// 	student?: Student;
-// }
+import SkeletonCard from "./SkeletonCard";
 
 export default function PresentTable() {
 	const {
@@ -34,22 +25,22 @@ export default function PresentTable() {
 		refetchInterval: 500,
 	});
 
-	if (isLoading) return <div>Loading attendance...</div>;
+	if (isLoading) return <SkeletonCard />;
 	if (isError) return <div>Error loading attendance data.</div>;
 
 	return (
-		<div className="flex overflow-x-hidden justify-center shadow-lg w-[400px] h-[400px] mr-10">
+		<div className="flex  overflow-x-hidden justify-center shadow-lg w-[600px] h-[400px] ">
 			<Card className="w-screen overflow-x-hidden">
 				<CardHeader>
 					<CardTitle className="text-xl font-bold">
 						Today&apos;s Present{" "}
-						<span className="text-sm font-thin ml-2">
+						<span className="text-sm font-thin ml-5">
 							Total: {presents.length}
 						</span>
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<Table>
+					<Table className="w-full table-auto">
 						<TableHeader>
 							<TableRow>
 								<TableHead>Fullname</TableHead>
@@ -59,10 +50,12 @@ export default function PresentTable() {
 						<TableBody>
 							{presents.map((present) => (
 								<TableRow key={present.id}>
-									<TableCell className="font-medium">
+									<TableCell className="font-medium max-w-[150px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
 										{present.student?.fullname || "N/A"}
 									</TableCell>
-									<TableCell>{present.student?.course_Year || "N/A"}</TableCell>
+									<TableCell className="max-w-[120px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
+										{present.student?.course_Year || "N/A"}
+									</TableCell>
 								</TableRow>
 							))}
 						</TableBody>
