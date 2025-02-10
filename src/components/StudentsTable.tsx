@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import AddStudentCard from "./AddStudentCard";
 import DeleteStudentAlert from "./DeleteStudentAlert";
 import toast from "react-hot-toast";
+import UpdateStudentCard from "./UpdateStudentCard";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -96,6 +97,16 @@ function StudentsTable({ students }: { students: Student[] }) {
 		}
 	};
 
+	const [updateStudentId, setUpdateStudentId] = useState<string>("");
+
+	const openEditDialog = (id: string) => {
+		setUpdateStudentId(id);
+	};
+
+	const closeUpdateDialog = () => {
+		setUpdateStudentId("");
+	};
+
 	return (
 		<Card className="w-full">
 			<CardHeader>
@@ -133,11 +144,21 @@ function StudentsTable({ students }: { students: Student[] }) {
 								<TableCell>{startIndex + index + 1}</TableCell>
 								<TableCell>{student.fullname}</TableCell>
 								<TableCell>{student.course_Year}</TableCell>
-								<TableCell>{student.status}</TableCell>
+								<TableCell
+									className={` ${
+										student.status === "Absent"
+											? " text-red-500"
+											: " text-green-500"
+									}`}>
+									{student.status}
+								</TableCell>
 								<TableCell className="text-right flex gap-2 justify-end">
-									<Button variant="secondary">
+									<Button
+										onClick={() => openEditDialog(student.id)}
+										variant="secondary">
 										<Edit className="w-4 h-4 mr-1" /> Edit
 									</Button>
+
 									<Button
 										onClick={() =>
 											openDeleteDialog(student.id, student.fullname)
@@ -176,6 +197,12 @@ function StudentsTable({ students }: { students: Student[] }) {
 			</CardContent>
 
 			<AddStudentCard isOpen={isDialogOpen} onClose={closeDialog} />
+
+			<UpdateStudentCard
+				id={updateStudentId}
+				isOpen={updateStudentId !== ""}
+				onClose={closeUpdateDialog}
+			/>
 
 			{deleteStudentId && (
 				<DeleteStudentAlert

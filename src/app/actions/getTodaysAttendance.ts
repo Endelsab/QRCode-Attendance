@@ -16,6 +16,7 @@ async function GetTodaysAttendance() {
 			//	lte: endOfDay,
 			//},
 			//},
+			distinct: ["studentId"], // Ensures only one record per student
 			orderBy: {
 				createdAt: "desc",
 			},

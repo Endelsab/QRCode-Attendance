@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Users2, ContactRound } from "lucide-react";
+import { Users2, ContactRound, LogOutIcon } from "lucide-react";
 
 function AppSidebar() {
 	return (
@@ -23,7 +23,7 @@ function AppSidebar() {
 			</div>
 			<div className=" mt-[140px] ">
 				<Button variant={"destructive"} className="w-full">
-					Logout
+					Logout <LogOutIcon className="ml-2  size-6" />
 				</Button>
 			</div>
 		</div>

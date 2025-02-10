@@ -24,6 +24,7 @@ type OnCloseType = {
 };
 
 const AddStudent = ({ onClose }: OnCloseType) => {
+	
 	const [fullname, setFullname] = useState("");
 	const [courseYear, setCourseYear] = useState("");
 	const [studentId, setStudentId] = useState("");

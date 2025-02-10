@@ -24,8 +24,8 @@ model Student {
 
   status String @default("Absent")
 
-  parents     ParentOnStudent[] // One student can have multiple parents (if needed)
-  attendances Attendance[] // A student can have multiple attendance records
+  parents     ParentOnStudent[]
+  attendances Attendance[]
 }
 
 model Parent {
@@ -40,13 +40,15 @@ model Parent {
 
 model Attendance {
   id   String   @id @default(cuid())
-  date DateTime @default(now()) // Track the specific attendance date
+  date DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   student   Student @relation(fields: [studentId], references: [studentID], onDelete: Cascade)
   studentId String
+
+  @@unique([studentId, date])
 }
 
 model ParentOnStudent {
@@ -56,13 +58,5 @@ model ParentOnStudent {
   parent   Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
   parentId String
 
-  @@id([studentId, parentId]) // Composite Primary Key
-}
-
-model Admin {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String    @unique
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  @@id([studentId, parentId])
 }

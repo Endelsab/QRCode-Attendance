@@ -10,19 +10,21 @@ export async function POST(req: NextRequest) {
 		const { studentId } = await req.json();
 
 		if (!studentId) {
-			console.log(studentId);
-			return NextResponse.json({ error: "no student id" }, { status: 404 });
+			console.log("Missing student ID in request.");
+			return NextResponse.json(
+				{ error: "no student id provided" },
+				{ status: 400 },
+			);
 		}
 
 		const student = await prisma.student.findUnique({
 			where: {
 				studentID: studentId,
 			},
-			select: {
-				fullname: true,
+			include: {
 				parents: {
-					select: {
-						email: true,
+					include: {
+						parent: true,
 					},
 				},
 			},
@@ -35,7 +37,9 @@ export async function POST(req: NextRequest) {
 		const { data, error } = await resend.emails.send({
 			from: "onboarding@resend.dev",
 			to: "wendelsabayo999@gmail.com",
-			// to: student.parents[0]?.email,
+
+			// to: student?.parents[0]?.parent?.email,
+
 			subject: "School Attendance",
 			react: EmailTemplate(student.fullname),
 		});
@@ -48,14 +52,26 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const attendance = await prisma.attendance.create({
-			data: {
-				studentId,
-			},
-		});
+		try {
+			await prisma.$transaction(async (tx) => {
+				await tx.attendance.create({ data: { studentId } });
+				await tx.student.update({
+					where: { studentID: studentId },
+					data: { status: "Present" },
+				});
+			});
+
+			console.log("Transaction successful");
+		} catch (error) {
+			console.error("Error updating attendance:", error);
+			return NextResponse.json(
+				{ error: "Failed to update attendance" },
+				{ status: 500 },
+			);
+		}
 
 		return NextResponse.json(
-			{ message: "email sent successfully", data, attendance },
+			{ message: "email sent successfully" },
 			{ status: 201 },
 		);
 	} catch (error) {
