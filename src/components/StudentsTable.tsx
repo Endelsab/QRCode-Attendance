@@ -110,18 +110,18 @@ function StudentsTable({ students }: { students: Student[] }) {
 	return (
 		<Card className="w-full">
 			<CardHeader>
-				<div className="flex justify-between">
+				<div className="flex justify-between mr-3">
 					<CardTitle className="text-lg font-semibold">
 						A List of Students
 					</CardTitle>
 					<div className="flex justify-between gap-4">
-						<Button onClick={openDialog}>
+						<Button variant={"secondary"} onClick={openDialog}>
 							<PlusIcon /> Add new student
 						</Button>
 						<div className="flex gap-2">
 							<Input type="text" placeholder="Search student" />
-							<Button className="hover:bg-gray-600">
-								<SearchIcon />
+							<Button variant={"outline"}>
+								<SearchIcon size={"icon"} />
 							</Button>
 						</div>
 					</div>
@@ -162,23 +162,22 @@ function StudentsTable({ students }: { students: Student[] }) {
 									<Button
 										onClick={() =>
 											openDeleteDialog(student.id, student.fullname)
-										}
-										variant="destructive">
+										}>
 										<Trash2 className="w-4 h-4 mr-1" />
 									</Button>
 								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
-					<TableFooter className="bg-white">
+					<TableFooter className="bg-transparent ">
 						<TableRow>
-							<TableCell colSpan={4} className="text-center">
-								<div className="flex mt-2 justify-start items-center gap-4">
+							<TableCell colSpan={4} className="text-center ">
+								<div className="flex  justify-start items-center gap-4 mt-2">
 									<Button
 										variant="outline"
 										onClick={prevPage}
 										disabled={currentPage === 1}>
-										<ChevronLeft className="w-4 h-4" />
+										<ChevronLeft className="w-4 h-4 cursor-pointer" />
 									</Button>
 									<span className="text-sm">
 										Page {currentPage} of {totalPages}
@@ -187,7 +186,7 @@ function StudentsTable({ students }: { students: Student[] }) {
 										variant="outline"
 										onClick={nextPage}
 										disabled={currentPage === totalPages}>
-										<ChevronRight className="w-4 h-4" />
+										<ChevronRight className="w-4 h-4 cursor-pointer" />
 									</Button>
 								</div>
 							</TableCell>

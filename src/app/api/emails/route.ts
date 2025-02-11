@@ -1,3 +1,6 @@
+"use server";
+
+
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";

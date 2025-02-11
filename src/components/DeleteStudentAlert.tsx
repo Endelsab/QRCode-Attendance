@@ -40,19 +40,14 @@ const DeleteStudentAlert = ({
 		<AlertDialog open={onOpen} onOpenChange={onClose}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle className="text-red-500">
-						Are you sure you want to delete?
-					</AlertDialogTitle>
-					<AlertDialogDescription className="text-2xl text-black font-bold">
+					<AlertDialogTitle className="text-sm text-red-600">Are you sure you want to delete?</AlertDialogTitle>
+					<AlertDialogDescription className="text-2xl  font-bold">
 						{fullname}
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-					<Button
-						variant="destructive"
-						onClick={handleDelete}
-						disabled={loading}>
+					<Button onClick={handleDelete} disabled={loading}>
 						{loading ? "Deleting..." : "Delete"}
 					</Button>
 				</AlertDialogFooter>

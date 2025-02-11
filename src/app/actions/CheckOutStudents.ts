@@ -1,0 +1,127 @@
+"use server";
+
+import { CheckOutEmailTemplate } from "@/components/CheckOutEmailTemplate";
+import prisma from "@/lib/prisma";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function CheckOutStudents(id: string) {
+	try {
+		const student = await prisma.student.findUnique({
+			where: {
+				studentID: id,
+			},
+			include: {
+				parents: {
+					include: {
+						parent: true,
+					},
+				},
+			},
+		});
+
+		if (!student) {
+			return { error: "student not found", status: 404 };
+		}
+
+		const parentEmail = student.parents[0]?.parent.email;
+
+		if (!parentEmail)
+			return { success: false, error: "No parent's email provided" };
+
+		const { data, error } = await resend.emails.send({
+			from: "onboarding@resend.dev",
+			to: "wendelsabayo999@gmail.com",
+
+			subject: "School Attendance",
+			react: CheckOutEmailTemplate(student.fullname),
+		});
+
+		if (error) {
+			console.error("Resend API Error:", error);
+			return { success: false, error: "Error in send email to parent" };
+		}
+
+		try {
+			await prisma.$transaction(async (tx) => {
+				await tx.student.update({
+					where: {
+						id: student.id,
+					},
+					data: {
+						status: "Absent",
+					},
+				}),
+					await tx.attendance.create({
+						data: {
+							studentId: student.studentID,
+						},
+					});
+			});
+
+			return {
+				success: true,
+				message: "Check-out successfully !",
+				status: 201,
+			};
+		} catch (error) {
+			console.error("Error checking out student:", error);
+			return { success: false, error: "Error checking out student" };
+		}
+	} catch (error) {
+		console.error("Failed to check out student:", error);
+
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "Failed to check out student",
+		};
+	}
+}
+
+export async function GetCheckedOutStudents() {
+	// const startOfDay = new Date();
+	// startOfDay.setHours(7, 0, 0, 0);
+
+	// const endOfDay = new Date();
+	// endOfDay.setHours(8, 0, 0, 0);
+
+	const oneHourAgo = new Date();
+	oneHourAgo.setHours(oneHourAgo.getHours() - 1); // 1 hour ago from now
+	try {
+		const CheckedOutStudents = await prisma.attendance.findMany({
+			//where: {
+			//createdAt: {
+			//	gte: startOfDay,
+			//	lte: endOfDay,
+			//},
+			//},
+
+			where: {
+				createdAt: {
+					gte: oneHourAgo, // Greater than or equal to 1 hour ago
+					lte: new Date(),
+				},
+			},
+			distinct: ["studentId"],
+			orderBy: {
+				createdAt: "desc",
+			},
+			include: {
+				student: {
+					select: {
+						id: true,
+						fullname: true,
+						course_Year: true,
+					},
+				},
+			},
+		});
+
+		return CheckedOutStudents;
+	} catch (error) {
+		console.error("Error in get check out students", error);
+		return [];
+	}
+}

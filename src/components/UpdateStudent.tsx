@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import QRCode from "react-qr-code";
@@ -119,13 +121,16 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
 						</div>
 
 						<CardFooter className="flex gap-6 mt-4 justify-between">
-							<Button onClick={onClose} variant="destructive">
-								Cancel
-							</Button>
-							<Button onClick={() => setShowQRCode(!showQRCode)}>
+							<Button onClick={onClose}>Cancel</Button>
+							<Button
+								variant={"outline"}
+								onClick={() => setShowQRCode(!showQRCode)}>
 								Generate QR Code
 							</Button>
-							<Button onClick={handleSubmit} disabled={submitting}>
+							<Button
+								variant={"secondary"}
+								onClick={handleSubmit}
+								disabled={submitting}>
 								{submitting ? (
 									<Loader2Icon className="size-4 animate-spin" />
 								) : (

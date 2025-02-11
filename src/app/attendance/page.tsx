@@ -1,8 +1,10 @@
+"use client";
+
 import Scanner from "@/components/ScanQrCode";
 
 import PresentTable from "@/components/presentTable";
 
-export default async function Attendance() {
+export default function Attendance() {
 	return (
 		<div className="flex flex-row">
 			<div className="basis-1/2">

@@ -4,35 +4,15 @@ import { Html5Qrcode } from "html5-qrcode";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
+import { CheckOutStudents } from "@/app/actions/CheckOutStudents";
 
-const Scanner = () => {
-
+function CheckOutScanner() {
 	const [result, setResult] = useState("Scan your QR code");
 	const [isScanning, setIsScanning] = useState(false);
-	
+
 	const scannerRef = useRef<Html5Qrcode | null>(null);
 	const lastScanTimeRef = useRef(0);
 	const scanInterval = 1000;
-
-	async function sendEmail(studentId: string) {
-		try {
-			const response = await fetch("/api/emails", {
-				method: "POST",
-				body: JSON.stringify({ studentId }),
-				headers: { "Content-Type": "application/json" },
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				toast.error("Failed to scan || invalid QR Code");
-				throw new Error(error.message || "Failed to send email");
-			} else {
-				toast.success("Present never absent !");
-			}
-		} catch (error) {
-			console.error("Error sending email:", error);
-		}
-	}
 
 	const startScanner = async () => {
 		if (scannerRef.current) {
@@ -49,10 +29,12 @@ const Scanner = () => {
 
 				async (decodedText) => {
 					const now = Date.now();
+
 					if (now - lastScanTimeRef.current < scanInterval) {
 						console.log("Scan ignored to prevent multiple triggers.");
 						return;
 					}
+
 					lastScanTimeRef.current = now;
 
 					setResult(decodedText);
@@ -60,7 +42,12 @@ const Scanner = () => {
 					const audio = new Audio("/scan_beep.mp3");
 					audio.play();
 
-					await sendEmail(decodedText);
+					const result = await CheckOutStudents(decodedText);
+					if (!result.success) {
+						toast.error("Unable to checkout !");
+						return;
+					}
+					toast.success("Checked out succussfully !");
 				},
 				(errorMessage) => {
 					if (errorMessage.includes("NotFoundException")) {
@@ -101,12 +88,11 @@ const Scanner = () => {
 			</div>
 			<Button
 				className="mt-2"
-			
 				onClick={isScanning ? stopScanner : startScanner}>
 				{isScanning ? "Stop Scanning" : "Start Scanner"}
 			</Button>
 		</div>
 	);
-};
+}
 
-export default Scanner;
+export default CheckOutScanner;

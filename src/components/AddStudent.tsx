@@ -131,14 +131,14 @@ const AddStudent = ({ onClose }: OnCloseType) => {
 						</div>
 
 						<CardFooter className="flex gap-6 mt-4 justify-between">
-							<Button onClick={onClose} variant="destructive">
+							<Button onClick={onClose}>
 								Cancel
 							</Button>
-							<Button onClick={() => setShowQRCode(!showQRCode)}>
+							<Button variant={"outline"} onClick={() => setShowQRCode(!showQRCode)}>
 								Generate QR Code
 							</Button>
 
-							<Button onClick={handleSubmit} disabled={submitting}>
+							<Button variant={"secondary"} onClick={handleSubmit} disabled={submitting}>
 								{submitting ? (
 									<Loader2Icon className="size-4 animate-spin" />
 								) : (

@@ -12,30 +12,29 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import SkeletonCard from "./SkeletonCard";
-import GetTodaysAttendance from "@/app/actions/GetTodaysAttendance";
+import { GetCheckedOutStudents } from "@/app/actions/CheckOutStudents";
 
-export default function PresentTable() {
+function CheckOutTable() {
 	const {
-		data: presents = [],
+		data: checkOutToday = [],
 		isLoading,
 		isError,
 	} = useQuery({
-		queryKey: ["GetTodaysAttendance"],
-		queryFn: GetTodaysAttendance,
+		queryKey: ["GetCheckedOutStudents"],
+		queryFn: GetCheckedOutStudents,
 		refetchInterval: 500,
 	});
 
 	if (isLoading) return <SkeletonCard />;
 	if (isError) return <div>Error loading attendance data.</div>;
-
 	return (
 		<div className="flex  overflow-x-hidden justify-center shadow-lg w-[600px] h-[400px] ">
 			<Card className="w-screen overflow-x-hidden">
 				<CardHeader>
 					<CardTitle className="text-xl font-bold">
-						Today's Present
+						Checked-out Students
 						<span className="text-sm font-thin ml-5">
-							Total: {presents.length}
+							Total: {checkOutToday.length}
 						</span>
 					</CardTitle>
 				</CardHeader>
@@ -48,13 +47,13 @@ export default function PresentTable() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{presents.map((present) => (
-								<TableRow key={present.id}>
+							{checkOutToday.map((checkOutStudent) => (
+								<TableRow key={checkOutStudent.id}>
 									<TableCell className="font-medium max-w-[150px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
-										{present.student?.fullname || "N/A"}
+										{checkOutStudent.student?.fullname || "N/A"}
 									</TableCell>
 									<TableCell className="max-w-[120px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
-										{present.student?.course_Year || "N/A"}
+										{checkOutStudent.student?.course_Year || "N/A"}
 									</TableCell>
 								</TableRow>
 							))}
@@ -65,3 +64,5 @@ export default function PresentTable() {
 		</div>
 	);
 }
+
+export default CheckOutTable;
