@@ -12,7 +12,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import SkeletonCard from "./SkeletonCard";
-import GetTodaysAttendance from "@/app/actions/GetTodaysAttendance";
+import { GetTodaysAttendance } from "@/app/actions/GetTodaysAttendance";
 
 export default function PresentTable() {
 	const {
