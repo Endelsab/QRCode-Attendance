@@ -3,7 +3,15 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function EditStudent(id: string, formData: any) {
+interface StudentUpdateData {
+	fullname: string;
+	courseYear: string;
+	studentId: string;
+	parentsName: string;
+	email: string;
+}
+
+export async function EditStudent(id: string, formData: StudentUpdateData) {
 	try {
 		const { fullname, courseYear, studentId, parentsName, email } = formData;
 
@@ -42,7 +50,7 @@ export async function EditStudent(id: string, formData: any) {
 		revalidatePath("/students");
 
 		return { success: true, updatedStudent, updatedParent };
-	} catch (error) {
+	} catch (error: unknown) {
 		console.error("Failed to update student:", error);
 
 		return {
@@ -54,17 +62,23 @@ export async function EditStudent(id: string, formData: any) {
 }
 
 export async function StudentToUpdate(id: string) {
-	const student = await prisma.student.findUnique({
-		where: { id },
-		include: {
-			parents: {
-				include: {
-					parent: true,
+	try {
+		const student = await prisma.student.findUnique({
+			where: { id },
+			include: {
+				parents: {
+					include: {
+						parent: true,
+					},
 				},
 			},
-		},
-	});
-	if (!student) return { success: false, message: "Student not found" };
+		});
 
-	return { success: true, student };
+		if (!student) return { success: false, message: "Student not found" };
+
+		return { success: true, student };
+	} catch (error) {
+		console.error("Error fetching student:", error);
+		return { success: false, message: "Error retrieving student data" };
+	}
 }

@@ -24,7 +24,6 @@ type OnCloseType = {
 };
 
 const AddStudent = ({ onClose }: OnCloseType) => {
-	
 	const [fullname, setFullname] = useState("");
 	const [courseYear, setCourseYear] = useState("");
 	const [studentId, setStudentId] = useState("");
@@ -131,14 +130,17 @@ const AddStudent = ({ onClose }: OnCloseType) => {
 						</div>
 
 						<CardFooter className="flex gap-6 mt-4 justify-between">
-							<Button onClick={onClose}>
-								Cancel
-							</Button>
-							<Button variant={"outline"} onClick={() => setShowQRCode(!showQRCode)}>
+							<Button onClick={onClose}>Cancel</Button>
+							<Button
+								variant={"outline"}
+								onClick={() => setShowQRCode(!showQRCode)}>
 								Generate QR Code
 							</Button>
 
-							<Button variant={"secondary"} onClick={handleSubmit} disabled={submitting}>
+							<Button
+								variant={"outline"}
+								onClick={handleSubmit}
+								disabled={submitting}>
 								{submitting ? (
 									<Loader2Icon className="size-4 animate-spin" />
 								) : (

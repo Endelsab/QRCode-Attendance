@@ -1,7 +1,6 @@
 import CheckOutScanner from "@/components/CheckOutScanner";
 import CheckOutTable from "@/components/CheckOutTable";
 
-
 function CheckOutStudents() {
 	return (
 		<div className="flex flex-row">

@@ -33,7 +33,8 @@ export default function PresentTable() {
 			<Card className="w-screen overflow-x-hidden">
 				<CardHeader>
 					<CardTitle className="text-xl font-bold">
-						Today's Present
+						{`Today' Present`}
+
 						<span className="text-sm font-thin ml-5">
 							Total: {presents.length}
 						</span>

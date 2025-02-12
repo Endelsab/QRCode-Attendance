@@ -1,7 +1,7 @@
 "use client";
 
 import { Html5Qrcode } from "html5-qrcode";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { CheckOutStudents } from "@/app/actions/CheckOutStudents";
@@ -14,7 +14,8 @@ function CheckOutScanner() {
 	const lastScanTimeRef = useRef(0);
 	const scanInterval = 1000;
 
-	const startScanner = async () => {
+	// Memoize the function so it doesn't get re-created on each render
+	const startScanner = useCallback(async () => {
 		if (scannerRef.current) {
 			await scannerRef.current.stop().catch(console.error);
 		}
@@ -26,7 +27,6 @@ function CheckOutScanner() {
 			await scannerRef.current.start(
 				{ facingMode: "environment" },
 				{ fps: 15, qrbox: { width: 300, height: 270 } },
-
 				async (decodedText) => {
 					const now = Date.now();
 
@@ -36,7 +36,6 @@ function CheckOutScanner() {
 					}
 
 					lastScanTimeRef.current = now;
-
 					setResult(decodedText);
 
 					const audio = new Audio("/scan_beep.mp3");
@@ -44,10 +43,10 @@ function CheckOutScanner() {
 
 					const result = await CheckOutStudents(decodedText);
 					if (!result.success) {
-						toast.error("Unable to checkout !");
+						toast.error("Unable to checkout!");
 						return;
 					}
-					toast.success("Checked out succussfully !");
+					toast.success("Checked out successfully!");
 				},
 				(errorMessage) => {
 					if (errorMessage.includes("NotFoundException")) {
@@ -61,16 +60,16 @@ function CheckOutScanner() {
 			console.error("Failed to start scanner:", error);
 			toast.error("Scanner failed to start");
 		}
-	};
+	}, []);
 
-	const stopScanner = async () => {
+	const stopScanner = useCallback(async () => {
 		if (scannerRef.current) {
 			await scannerRef.current.stop().catch(console.error);
 			await scannerRef.current.clear();
 			scannerRef.current = null;
 			setIsScanning(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		startScanner();
@@ -78,7 +77,7 @@ function CheckOutScanner() {
 		return () => {
 			stopScanner();
 		};
-	}, []);
+	}, [startScanner, stopScanner]);
 
 	return (
 		<div className="flex flex-col w-[400px] h-[400px] gap-2">

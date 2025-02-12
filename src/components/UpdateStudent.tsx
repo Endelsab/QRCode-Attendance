@@ -128,7 +128,7 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
 								Generate QR Code
 							</Button>
 							<Button
-								variant={"secondary"}
+								variant={"outline"}
 								onClick={handleSubmit}
 								disabled={submitting}>
 								{submitting ? (

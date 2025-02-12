@@ -77,7 +77,7 @@ export default function PresentChart() {
 					Attendence up by 5.2% this month <TrendingUp className="h-4 w-4" />
 				</div>
 				<div className="leading-none text-muted-foreground">
-					powered by Wendel aka copy and paste
+					powered by Wendel
 				</div>
 			</CardFooter>
 		</Card>

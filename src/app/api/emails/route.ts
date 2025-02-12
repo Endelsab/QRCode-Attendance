@@ -1,6 +1,5 @@
 "use server";
 
-
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -54,6 +53,7 @@ export async function POST(req: NextRequest) {
 				{ status: 500 },
 			);
 		}
+		console.log(data);
 
 		try {
 			await prisma.$transaction(async (tx) => {

@@ -44,32 +44,27 @@ export async function CheckOutStudents(id: string) {
 		}
 
 		try {
-			await prisma.$transaction(async (tx) => {
-				await tx.student.update({
-					where: {
-						id: student.id,
-					},
-					data: {
-						status: "Absent",
-					},
+			await prisma.$transaction([
+				prisma.student.update({
+					where: { id: student.id },
+					data: { status: "Absent" },
 				}),
-					await tx.attendance.create({
-						data: {
-							studentId: student.studentID,
-						},
-					});
-			});
+				prisma.attendance.create({
+					data: { studentId: student.studentID },
+				}),
+			]);
 
 			return {
 				success: true,
 				message: "Check-out successfully !",
 				status: 201,
+				data,
 			};
 		} catch (error) {
 			console.error("Error checking out student:", error);
 			return { success: false, error: "Error checking out student" };
 		}
-	} catch (error) {
+	} catch (error: unknown) {
 		console.error("Failed to check out student:", error);
 
 		return {
@@ -120,7 +115,7 @@ export async function GetCheckedOutStudents() {
 		});
 
 		return CheckedOutStudents;
-	} catch (error) {
+	} catch (error: unknown) {
 		console.error("Error in get check out students", error);
 		return [];
 	}
