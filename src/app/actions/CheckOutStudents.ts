@@ -7,116 +7,130 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function CheckOutStudents(id: string) {
-	try {
-		const student = await prisma.student.findUnique({
-			where: {
-				studentID: id,
-			},
-			include: {
-				parents: {
-					include: {
-						parent: true,
-					},
-				},
-			},
-		});
+     try {
+          const student = await prisma.student.findUnique({
+               where: {
+                    studentID: id,
+               },
+               include: {
+                    parents: {
+                         include: {
+                              parent: true,
+                         },
+                    },
+               },
+          });
 
-		if (!student) {
-			return { error: "student not found", status: 404 };
-		}
+          if (!student) {
+               return { error: "student not found", status: 404 };
+          }
 
-		const parentEmail = student.parents[0]?.parent.email;
+          const parentEmail = student.parents[0]?.parent.email;
 
-		if (!parentEmail)
-			return { success: false, error: "No parent's email provided" };
+          if (!parentEmail)
+               return { success: false, error: "No parent's email provided" };
 
-		const { data, error } = await resend.emails.send({
-			from: "onboarding@resend.dev",
-			to: "wendelsabayo999@gmail.com",
+          const oneHourAgo = new Date();
+          oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
-			subject: "School Attendance",
-			react: CheckOutEmailTemplate(student.fullname),
-		});
+          const lastAttendance = await prisma.attendance.findFirst({
+               where: { studentId: student.studentID },
+               orderBy: { createdAt: "desc" },
+          });
 
-		if (error) {
-			console.error("Resend API Error:", error);
-			return { success: false, error: "Error in send email to parent" };
-		}
+          if (
+               lastAttendance &&
+               new Date(lastAttendance.createdAt) > oneHourAgo
+          ) {
+               return {
+                    success: false,
+                    message: "Check-out already recorded within the last hour.",
+                    status: 400,
+               };
+          }
 
-		try {
-			await prisma.$transaction([
-				prisma.student.update({
-					where: { id: student.id },
-					data: { status: "Absent" },
-				}),
-				prisma.attendance.create({
-					data: { studentId: student.studentID },
-				}),
-			]);
+          const { data, error } = await resend.emails.send({
+               from: "onboarding@resend.dev",
+               to: "wendelsabayo999@gmail.com",
 
-			return {
-				success: true,
-				message: "Check-out successfully !",
-				status: 201,
-				data,
-			};
-		} catch (error) {
-			console.error("Error checking out student:", error);
-			return { success: false, error: "Error checking out student" };
-		}
-	} catch (error: unknown) {
-		console.error("Failed to check out student:", error);
+               subject: "School Attendance",
+               react: CheckOutEmailTemplate(student.fullname),
+          });
 
-		return {
-			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to check out student",
-		};
-	}
+          if (error) {
+               console.error("Resend API Error:", error);
+               return {
+                    success: false,
+                    error: "Error in send email to parent",
+               };
+          }
+
+          try {
+               await prisma.$transaction([
+                    prisma.student.update({
+                         where: { id: student.id },
+                         data: { status: "Absent" },
+                    }),
+                    prisma.attendance.create({
+                         data: { studentId: student.studentID },
+                    }),
+               ]);
+          } catch (error) {
+               console.error("Error checking out student:", error);
+               return { success: false, error: "Error checking out student" };
+          }
+          return {
+               success: true,
+               message: "Checked-out successfully !",
+               status: 201,
+               data,
+          };
+     } catch (error: unknown) {
+          console.error("Failed to check out student:", error);
+
+          return {
+               success: false,
+               error:
+                    error instanceof Error ?
+                         error.message
+                    :    "Failed to check out student",
+          };
+     }
 }
 
 export async function GetCheckedOutStudents() {
-	// const startOfDay = new Date();
-	// startOfDay.setHours(7, 0, 0, 0);
+     const fiveMinutesAgo = new Date();
+     fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
 
-	// const endOfDay = new Date();
-	// endOfDay.setHours(8, 0, 0, 0);
+     const now = new Date();
 
-	const oneHourAgo = new Date();
-	oneHourAgo.setHours(oneHourAgo.getHours() - 1); // 1 hour ago from now
-	try {
-		const CheckedOutStudents = await prisma.attendance.findMany({
-			//where: {
-			//createdAt: {
-			//	gte: startOfDay,
-			//	lte: endOfDay,
-			//},
-			//},
+     try {
+          const CheckedOutStudents = await prisma.attendance.findMany({
+               where: {
+                    createdAt: {
+                         gte: fiveMinutesAgo,
+                         lte: now,
+                    },
+               },
 
-			where: {
-				createdAt: {
-					gte: oneHourAgo, // Greater than or equal to 1 hour ago
-					lte: new Date(),
-				},
-			},
-			distinct: ["studentId"],
-			orderBy: {
-				createdAt: "desc",
-			},
-			include: {
-				student: {
-					select: {
-						id: true,
-						fullname: true,
-						course_Year: true,
-					},
-				},
-			},
-		});
+               distinct: ["studentId"],
+               orderBy: {
+                    createdAt: "desc",
+               },
+               include: {
+                    student: {
+                         select: {
+                              id: true,
+                              fullname: true,
+                              course_Year: true,
+                         },
+                    },
+               },
+          });
 
-		return CheckedOutStudents;
-	} catch (error: unknown) {
-		console.error("Error in get check out students", error);
-		return [];
-	}
+          return CheckedOutStudents;
+     } catch (error: unknown) {
+          console.error("Error in get check out students", error);
+          return [];
+     }
 }
