@@ -44,7 +44,7 @@ const Scanner = () => {
                          const result = await Attendance(decodedText);
 
                          if (!result.success) {
-                              toast.error(" error || Already checked out");
+                              toast.error(result.message);
                               return;
                          } else {
                               toast.success("Present never absent ");

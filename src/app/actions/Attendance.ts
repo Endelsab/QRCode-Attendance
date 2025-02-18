@@ -2,7 +2,9 @@
 
 import { EmailTemplate } from "@/components/email-template";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
+import { format } from "date-fns";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -55,15 +57,15 @@ export async function Attendance(studentId: string) {
                     status: 400,
                };
           }
+          const now = new Date();
+          const formattedDate = format(now, "MMMM dd, yyyy hh:mm:ss a");
 
           const { data, error } = await resend.emails.send({
                from: "onboarding@resend.dev",
                to: "wendelsabayo999@gmail.com",
 
-               //   to:parentEmail
-
                subject: "School Attendance",
-               react: EmailTemplate(student.fullname),
+               react: EmailTemplate(student.fullname, formattedDate),
           });
 
           if (error) {
@@ -83,6 +85,8 @@ export async function Attendance(studentId: string) {
                console.error("Error in attedance server function:", error);
                return { success: false, error: "Error checking-in student" };
           }
+
+          revalidatePath("/");
 
           return { success: true, data };
      } catch (error: unknown) {

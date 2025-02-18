@@ -2,6 +2,7 @@
 
 import { CheckOutEmailTemplate } from "@/components/CheckOutEmailTemplate";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -79,6 +80,8 @@ export async function CheckOutStudents(id: string) {
                console.error("Error checking out student:", error);
                return { success: false, error: "Error checking out student" };
           }
+
+          revalidatePath("/checkOutStudents");
           return {
                success: true,
                message: "Checked-out successfully !",
@@ -99,8 +102,8 @@ export async function CheckOutStudents(id: string) {
 }
 
 export async function GetCheckedOutStudents() {
-     const fiveMinutesAgo = new Date();
-     fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
+     const oneHoursAgo = new Date();
+     oneHoursAgo.setHours(oneHoursAgo.getHours() - 1);
 
      const now = new Date();
 
@@ -108,7 +111,7 @@ export async function GetCheckedOutStudents() {
           const CheckedOutStudents = await prisma.attendance.findMany({
                where: {
                     createdAt: {
-                         gte: fiveMinutesAgo,
+                         gte: oneHoursAgo,
                          lte: now,
                     },
                },

@@ -158,7 +158,7 @@ function StudentsTable({ students }: { students: Student[] }) {
                                    <TableHead className="w-[150px]">
                                         Status
                                    </TableHead>
-                                   <TableHead className="w-[180px]">
+                                   <TableHead className="w-[120px]">
                                         Action
                                    </TableHead>
                               </TableRow>

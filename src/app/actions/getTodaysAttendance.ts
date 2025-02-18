@@ -3,8 +3,8 @@
 import prisma from "@/lib/prisma";
 
 export async function GetTodaysAttendance() {
-     const fiveMinutesAgo = new Date();
-     fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
+     const oneHoursAgo = new Date();
+     oneHoursAgo.setHours(oneHoursAgo.getHours() - 1);
 
      const now = new Date();
 
@@ -12,11 +12,11 @@ export async function GetTodaysAttendance() {
           const presentToday = await prisma.attendance.findMany({
                where: {
                     createdAt: {
-                         gte: fiveMinutesAgo,
+                         gte: oneHoursAgo,
                          lte: now,
                     },
                },
-               distinct: ["studentId"], // Ensures only one record per student
+               distinct: ["studentId"],
                orderBy: {
                     createdAt: "desc",
                },
