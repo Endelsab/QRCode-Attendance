@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
-import { useQuery } from "@tanstack/react-query";
-import { GetAttendanceByMonth } from "./actions/GetAttendanceByMonth";
 import {
      Card,
      CardContent,
@@ -25,6 +21,10 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import { GetAttendanceByMonth } from "./actions/GetAttendanceByMonth";
 
 export default function PresentChart() {
      // State for semester selection
@@ -134,15 +134,14 @@ export default function PresentChart() {
                               <BarChart
                                    accessibilityLayer
                                    data={chartData}
-                                   width={700} // Make the chart wider
-                                   height={30} // Reduce unnecessary height
+                                   width={700}
                                    margin={{
                                         top: 20,
                                         right: 30,
                                         left: 20,
                                         bottom: 10,
                                    }}
-                                   barSize={50} // Adjust bar thickness
+                                   barSize={50}
                               >
                                    <CartesianGrid vertical={false} />
                                    <XAxis

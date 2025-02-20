@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useOptimistic, startTransition } from "react";
 import { DeleteStudent } from "@/app/actions/DeleteStudent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
      Table,
      TableBody,
@@ -11,20 +12,19 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table";
-import { Button } from "./ui/button";
 import {
-     Trash2,
-     Edit,
      ChevronLeft,
      ChevronRight,
-     SearchIcon,
+     Edit,
      PlusIcon,
+     SearchIcon,
+     Trash2,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { startTransition, useOptimistic, useState } from "react";
+import toast from "react-hot-toast";
 import AddStudentCard from "./AddStudentCard";
 import DeleteStudentAlert from "./DeleteStudentAlert";
-import toast from "react-hot-toast";
+import { Button } from "./ui/button";
 import UpdateStudentCard from "./UpdateStudentCard";
 
 const ITEMS_PER_PAGE = 10;

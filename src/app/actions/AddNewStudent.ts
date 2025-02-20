@@ -3,58 +3,103 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-type StudentData = {
-     fullname: string;
-     course_Year: string;
+type formData = {
+     studentFullname: string;
+     courseYear: string;
      studentId: string;
-     parentsName: string;
-     email: string;
+     parentFullname: string;
+     parentEmail: string;
 };
 
-async function AddNewStudent({
-     fullname,
-     course_Year,
+export async function AddNewStudent({
+     studentFullname,
+     courseYear,
      studentId,
-     parentsName,
-     email,
-}: StudentData) {
+     parentFullname,
+     parentEmail,
+}: formData) {
+     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+     if (
+          !studentFullname ||
+          !courseYear ||
+          !studentId ||
+          !parentFullname ||
+          !parentEmail
+     ) {
+          return {
+               success: false,
+               message: "All fields are required.",
+               status: 400,
+          };
+     }
+
+     if (studentId.length < 8) {
+          return {
+               success: false,
+               message: "Student ID must be at least 8 characters long.",
+               status: 400,
+          };
+     }
+
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if (!emailRegex.test(parentEmail)) {
+          return {
+               success: false,
+               message: "Invalid email format.",
+               status: 400,
+          };
+     }
+
      try {
-          const newStudent = await prisma.student.create({
+          const existingStudent = await prisma.student.findUnique({
+               where: { studentID: studentId },
+          });
+
+          if (existingStudent) {
+               return {
+                    success: false,
+                    message: "Student ID already exists.",
+                    status: 409,
+               };
+          }
+
+          await prisma.student.create({
                data: {
-                    fullname,
-                    course_Year,
+                    fullname: studentFullname,
+                    course_Year: courseYear,
                     studentID: studentId,
-               },
-          });
 
-          const newParent = await prisma.parent.create({
-               data: {
-                    fullname: parentsName,
-                    email: email,
-               },
-          });
-
-          await prisma.parentOnStudent.create({
-               data: {
-                    studentId: newStudent.id,
-                    parentId: newParent.id,
+                    parents: {
+                         create: {
+                              parent: {
+                                   create: {
+                                        fullname: parentFullname,
+                                        email: parentEmail,
+                                   },
+                              },
+                         },
+                    },
                },
           });
 
           revalidatePath("/students");
 
-          return { success: true, status: 201 };
-     } catch (error) {
-          console.error("Failed to add new student:", error);
+          return {
+               success: true,
+               message: "Student added successfully !",
+               status: 201,
+          };
+     } catch (error: any) {
+          console.error("Database Error:", error);
 
           return {
                success: false,
-               error:
-                    error instanceof Error ?
-                         error.message
-                    :    "Failed to add new student",
+               message:
+                    error.code === "P2002" ?
+                         "Student ID already exists."
+                    :    "Something went wrong. Please try again.",
+               status: 500,
           };
      }
 }
-
-export default AddNewStudent;
