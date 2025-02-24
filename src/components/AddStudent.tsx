@@ -43,7 +43,6 @@ const AddStudent = ({ onClose }: OnCloseType) => {
      const [studentID, setStudentID] = useState("");
      const [showQRCode, setShowQRCode] = useState(false);
 
-     // Validation function
      const validateField = (name: string, value: string) => {
           let error = "";
 
@@ -111,7 +110,7 @@ const AddStudent = ({ onClose }: OnCloseType) => {
      return (
           <div className="min-h-screen flex bg-gray gap-4 justify-center items-center">
                <Card className="w-[700px]">
-                    <CardHeader>
+                    <CardHeader className="flex items-center justify-center">
                          <CardTitle className="text-2xl">
                               Add New Student
                          </CardTitle>
@@ -127,8 +126,11 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                         className="space-y-4"
                                    >
                                         {/** Full Name */}
-                                        <div className="flex w-80 flex-col space-y-1.5">
-                                             <Label htmlFor="studentFullname">
+                                        <div className="flex w-85 flex-col space-y-1.5">
+                                             <Label
+                                                  className="text-neutral-500"
+                                                  htmlFor="studentFullname"
+                                             >
                                                   Full Name
                                              </Label>
                                              <Input
@@ -148,8 +150,11 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                         </div>
 
                                         {/** Course & Year */}
-                                        <div className="flex w-80 flex-col space-y-1.5">
-                                             <Label htmlFor="courseYear">
+                                        <div className="flex w-85 flex-col space-y-1.5">
+                                             <Label
+                                                  className="text-neutral-500"
+                                                  htmlFor="courseYear"
+                                             >
                                                   Course & Year
                                              </Label>
                                              <Input
@@ -167,8 +172,11 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                         </div>
 
                                         {/** Student ID */}
-                                        <div className="flex w-80 flex-col space-y-1.5">
-                                             <Label htmlFor="studentId">
+                                        <div className="flex w-85 flex-col space-y-1.5">
+                                             <Label
+                                                  className="text-neutral-500"
+                                                  htmlFor="studentId"
+                                             >
                                                   Student ID
                                              </Label>
                                              <Input
@@ -186,8 +194,11 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                         </div>
 
                                         {/** Parent Full Name */}
-                                        <div className="flex w-80 flex-col space-y-1.5">
-                                             <Label htmlFor="parentFullname">
+                                        <div className="flex w-85 flex-col space-y-1.5">
+                                             <Label
+                                                  className="text-neutral-500"
+                                                  htmlFor="parentFullname"
+                                             >
                                                   Parent Full Name
                                              </Label>
                                              <Input
@@ -207,8 +218,11 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                         </div>
 
                                         {/** Parent Email */}
-                                        <div className="flex w-80 flex-col space-y-1.5">
-                                             <Label htmlFor="parentEmail">
+                                        <div className="flex w-85 flex-col space-y-1.5">
+                                             <Label
+                                                  className="text-neutral-500"
+                                                  htmlFor="parentEmail"
+                                             >
                                                   Parent Email
                                              </Label>
                                              <Input
@@ -241,6 +255,19 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                                             !showQRCode
                                                        )
                                                   }
+                                                  disabled={
+                                                       submitting ||
+                                                       Object.values(
+                                                            errors
+                                                       ).some((err) => err) ||
+                                                       Object.values(
+                                                            formData
+                                                       ).some(
+                                                            (val) =>
+                                                                 val.trim() ===
+                                                                 ""
+                                                       )
+                                                  }
                                              >
                                                   Generate QR Code
                                              </Button>
@@ -264,8 +291,7 @@ const AddStudent = ({ onClose }: OnCloseType) => {
                                              >
                                                   {submitting ?
                                                        <>
-                                                            <Loader2 className="animate-spin " />
-                                                            ......
+                                                            <Loader2 className="animate-spin" />
                                                        </>
                                                   :    <>
                                                             <PlusIcon />

@@ -2,7 +2,6 @@
 
 import { EmailTemplate } from "@/components/email-template";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { format } from "date-fns";
 
@@ -11,93 +10,75 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function Attendance(studentId: string) {
      try {
           const student = await prisma.student.findUnique({
-               where: {
-                    studentID: studentId,
-               },
-               include: {
-                    parents: {
-                         include: {
-                              parent: true,
-                         },
-                    },
-               },
+               where: { studentId },
+               include: { parent: true },
           });
 
-          if (!student)
-               return {
-                    success: false,
-                    message: "Student not found",
-                    status: 404,
-               };
+          if (!student) {
+               return { success: false, error: "Student not found" };
+          }
 
-          const parentEmail = student.parents[0]?.parent.email;
+          const parent = student.parent[0];
 
-          if (!parentEmail)
-               return {
-                    success: false,
-                    message: "Parent's email not found unable to notify parents",
-                    status: 404,
-               };
+          if (!parent || !parent.parentEmail) {
+               return { success: false, error: "Parent's email not found." };
+          }
 
-          const oneHourAgo = new Date();
-          oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+          const now = new Date();
+          const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
           const lastAttendance = await prisma.attendance.findFirst({
-               where: { studentId: student.studentID },
+               where: {
+                    studentId: student.studentId,
+                    createdAt: { gte: oneHourAgo },
+               },
                orderBy: { createdAt: "desc" },
           });
 
-          if (
-               lastAttendance &&
-               new Date(lastAttendance.createdAt) > oneHourAgo
-          ) {
+          if (lastAttendance) {
                return {
-                    success: false,
-                    message: "already recorded within the last hour.",
-                    status: 400,
+                    success: true,
+                    error: "Attendance already recorded within the last hour.",
                };
-          }
-          const now = new Date();
-          const formattedDate = format(now, "MMMM dd, yyyy hh:mm:ss a");
-
-          const { data, error } = await resend.emails.send({
-               from: "onboarding@resend.dev",
-               to: "wendelsabayo999@gmail.com",
-
-               subject: "School Attendance",
-               react: EmailTemplate(student.fullname, formattedDate),
-          });
-
-          if (error) {
-               console.error("Resend API Error:", error);
-               return { success: false, message: error.message };
           }
 
           try {
-               await prisma.$transaction(async (tx) => {
-                    await tx.attendance.create({ data: { studentId } });
-                    await tx.student.update({
-                         where: { studentID: studentId },
+               await prisma.$transaction([
+                    prisma.attendance.create({
+                         data: { studentId: student.id },
+                    }),
+                    prisma.student.update({
+                         where: { studentId },
                          data: { status: "Present" },
-                    });
-               });
-          } catch (error) {
-               console.error("Error in attedance server function:", error);
-               return { success: false, error: "Error checking-in student" };
+                    }),
+               ]);
+          } catch (error: unknown) {
+               console.log("error in checking in student :", error);
+               return { success: false, error: "Already present" };
           }
 
-          revalidatePath("/");
+          const formattedDate = format(now, "MMMM dd, yyyy hh:mm a");
 
-          return { success: true, data };
-     } catch (error: unknown) {
-          console.error("Failed to check out student:", error);
+          const { error } = await resend.emails.send({
+               from: "onboarding@resend.dev",
+               to: "wendelsabayo999@gmail.com",
+               subject: "School Attendance",
+               react: EmailTemplate(student.studentFullname, formattedDate),
+          });
+          if (error) {
+               console.log(error.message);
+               return { success: false, error: error.message };
+          }
 
+          return { success: true, status: 201 };
+     } catch (error) {
+          console.error("Error in Attendance function:", error);
           return {
                success: false,
                error:
                     error instanceof Error ?
                          error.message
-                    :    "Failed to check out student",
+                    :    "Failed to check in student",
           };
      }
 }

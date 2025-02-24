@@ -2,23 +2,20 @@
 
 import { CheckOutEmailTemplate } from "@/components/CheckOutEmailTemplate";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function CheckOutStudents(id: string) {
+export async function CheckOutStudents(studentId: string) {
      try {
           const student = await prisma.student.findUnique({
                where: {
-                    studentID: id,
+                    studentId,
                },
+
                include: {
-                    parents: {
-                         include: {
-                              parent: true,
-                         },
-                    },
+                    parent: true,
                },
           });
 
@@ -26,36 +23,50 @@ export async function CheckOutStudents(id: string) {
                return { error: "student not found", status: 404 };
           }
 
-          const parentEmail = student.parents[0]?.parent.email;
+          const parentEmail = student.parent[0]?.parentEmail;
 
           if (!parentEmail)
                return { success: false, error: "No parent's email provided" };
 
-          const oneHourAgo = new Date();
-          oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+          const now = new Date();
+          const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
           const lastAttendance = await prisma.attendance.findFirst({
-               where: { studentId: student.studentID },
+               where: {
+                    studentId: student.studentId,
+                    createdAt: { gte: oneHourAgo },
+               },
                orderBy: { createdAt: "desc" },
           });
 
-          if (
-               lastAttendance &&
-               new Date(lastAttendance.createdAt) > oneHourAgo
-          ) {
+          if (lastAttendance) {
                return {
-                    success: false,
-                    message: "Check-out already recorded within the last hour.",
-                    status: 400,
+                    success: true,
+                    error: "Already recorded .",
                };
           }
 
-          const { data, error } = await resend.emails.send({
+          try {
+               await prisma.$transaction([
+                    prisma.student.update({
+                         where: { id: student.id },
+                         data: { status: "Checked-out" },
+                    }),
+                    prisma.attendance.create({
+                         data: { studentId: student.id },
+                    }),
+               ]);
+          } catch (error) {
+               console.error("Error checking out student:", error);
+               return { success: false, error: "Error checking out student" };
+          }
+
+          const { error } = await resend.emails.send({
                from: "onboarding@resend.dev",
                to: "wendelsabayo999@gmail.com",
 
                subject: "School Attendance",
-               react: CheckOutEmailTemplate(student.fullname),
+               react: CheckOutEmailTemplate(student.studentFullname),
           });
 
           if (error) {
@@ -66,27 +77,10 @@ export async function CheckOutStudents(id: string) {
                };
           }
 
-          try {
-               await prisma.$transaction([
-                    prisma.student.update({
-                         where: { id: student.id },
-                         data: { status: "Absent" },
-                    }),
-                    prisma.attendance.create({
-                         data: { studentId: student.studentID },
-                    }),
-               ]);
-          } catch (error) {
-               console.error("Error checking out student:", error);
-               return { success: false, error: "Error checking out student" };
-          }
-
-          revalidatePath("/checkOutStudents");
           return {
                success: true,
                message: "Checked-out successfully !",
                status: 201,
-               data,
           };
      } catch (error: unknown) {
           console.error("Failed to check out student:", error);
@@ -124,8 +118,8 @@ export async function GetCheckedOutStudents() {
                     student: {
                          select: {
                               id: true,
-                              fullname: true,
-                              course_Year: true,
+                              studentFullname: true,
+                              courseYear: true,
                          },
                     },
                },

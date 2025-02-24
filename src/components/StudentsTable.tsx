@@ -31,8 +31,8 @@ const ITEMS_PER_PAGE = 10;
 
 type Student = {
      id: string;
-     fullname: string;
-     course_Year: string;
+     studentFullname: string;
+     courseYear: string;
      status: string;
 };
 
@@ -41,10 +41,12 @@ function StudentsTable({ students }: { students: Student[] }) {
           useOptimistic<Student[]>(students);
 
      const [currentPage, setCurrentPage] = useState(1);
+
      const totalPages = Math.ceil(optimisticStudents.length / ITEMS_PER_PAGE);
 
      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
      const endIndex = startIndex + ITEMS_PER_PAGE;
+
      const studentsToShow = optimisticStudents.slice(startIndex, endIndex);
 
      const nextPage = () => {
@@ -118,7 +120,7 @@ function StudentsTable({ students }: { students: Student[] }) {
      };
 
      return (
-          <Card className="w-full">
+          <Card>
                <CardHeader>
                     <div className="flex justify-between mr-3">
                          <CardTitle className="text-lg font-semibold">
@@ -145,7 +147,7 @@ function StudentsTable({ students }: { students: Student[] }) {
                     </div>
                </CardHeader>
                <CardContent className="overflow-x-auto">
-                    <Table className="table-fixed w-full">
+                    <Table className="table-fixed w-full  ">
                          <TableHeader>
                               <TableRow>
                                    <TableHead className="w-[50px]">#</TableHead>
@@ -170,20 +172,24 @@ function StudentsTable({ students }: { students: Student[] }) {
                                              {startIndex + index + 1}
                                         </TableCell>
                                         <TableCell>
-                                             {student.fullname}
+                                             {student.studentFullname}
                                         </TableCell>
                                         <TableCell>
-                                             {student.course_Year}
+                                             {student.courseYear}
                                         </TableCell>
                                         <TableCell
                                              className={` ${
-                                                  student.status === "Absent" ?
+                                                  (
+                                                       student.status ===
+                                                       "Checked-out"
+                                                  ) ?
                                                        " text-red-500"
                                                   :    " text-green-500"
                                              }`}
                                         >
                                              {student.status}
                                         </TableCell>
+
                                         <TableCell className="text-right flex gap-2 justify-end">
                                              <Button
                                                   variant={"outline"}
@@ -201,8 +207,8 @@ function StudentsTable({ students }: { students: Student[] }) {
                                                   onClick={() =>
                                                        openDeleteDialog(
                                                             student.id,
-                                                            student.fullname,
-                                                            student.course_Year
+                                                            student.studentFullname,
+                                                            student.courseYear
                                                        )
                                                   }
                                              >

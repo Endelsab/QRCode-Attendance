@@ -4,26 +4,59 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 interface StudentUpdateData {
-     fullname: string;
+     studentFullname: string;
      courseYear: string;
      studentId: string;
-     parentsName: string;
-     email: string;
+     parentFullname: string;
+     parentEmail: string;
 }
 
 export async function EditStudent(id: string, formData: StudentUpdateData) {
      try {
-          const { fullname, courseYear, studentId, parentsName, email } =
-               formData;
+          const {
+               studentFullname,
+               courseYear,
+               studentId,
+               parentFullname,
+               parentEmail,
+          } = formData;
+
+          if (
+               !studentFullname ||
+               !courseYear ||
+               !studentId ||
+               !parentFullname ||
+               !parentEmail
+          ) {
+               return {
+                    success: false,
+                    message: "All fields are required.",
+                    status: 400,
+               };
+          }
+
+          if (studentId.length < 8) {
+               return {
+                    success: false,
+                    message: "Student ID must be at least 8 characters long.",
+                    status: 400,
+               };
+          }
+
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(parentEmail)) {
+               return {
+                    success: false,
+                    message: "Invalid email format.",
+                    status: 400,
+               };
+          }
 
           const studentWithParent = await prisma.student.findUnique({
                where: { id },
+
                include: {
-                    parents: {
-                         include: {
-                              parent: true,
-                         },
-                    },
+                    parent: true,
                },
           });
 
@@ -31,7 +64,7 @@ export async function EditStudent(id: string, formData: StudentUpdateData) {
                return { success: false, error: "Student not found" };
           }
 
-          const parent = studentWithParent.parents[0]?.parent;
+          const parent = studentWithParent.parent;
 
           if (!parent) {
                return {
@@ -40,24 +73,29 @@ export async function EditStudent(id: string, formData: StudentUpdateData) {
                };
           }
 
-          const [updatedStudent, updatedParent] = await prisma.$transaction([
-               prisma.student.update({
-                    where: { id },
-                    data: {
-                         fullname,
-                         course_Year: courseYear,
-                         studentID: studentId,
-                    },
-               }),
-               prisma.parent.update({
-                    where: { id: parent.id },
-                    data: { fullname: parentsName, email: email },
-               }),
-          ]);
+          try {
+               await prisma.$transaction([
+                    prisma.student.update({
+                         where: { id: studentWithParent.id },
+                         data: {
+                              studentFullname,
+                              courseYear,
+                              studentId,
+                         },
+                    }),
+                    prisma.parent.update({
+                         where: { studentId: studentWithParent.id },
+                         data: { parentFullname, parentEmail },
+                    }),
+               ]);
+          } catch (error) {
+               console.log("Error in updating student information", error);
+               return { success: false, error: error };
+          }
 
           revalidatePath("/students");
 
-          return { success: true, updatedStudent, updatedParent };
+          return { success: true, status: 200 };
      } catch (error: unknown) {
           console.error("Failed to update student:", error);
 
@@ -75,12 +113,9 @@ export async function StudentToUpdate(id: string) {
      try {
           const student = await prisma.student.findUnique({
                where: { id },
+
                include: {
-                    parents: {
-                         include: {
-                              parent: true,
-                         },
-                    },
+                    parent: true,
                },
           });
 

@@ -24,8 +24,8 @@ export async function GetTodaysAttendance() {
                     student: {
                          select: {
                               id: true,
-                              fullname: true,
-                              course_Year: true,
+                              studentFullname: true,
+                              courseYear: true,
                          },
                     },
                },

@@ -51,11 +51,12 @@ function CheckOutTable() {
                                         <TableRow key={checkOutStudent.id}>
                                              <TableCell className="font-medium max-w-[150px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
                                                   {checkOutStudent.student
-                                                       ?.fullname || "N/A"}
+                                                       .studentFullname ||
+                                                       "N/A"}
                                              </TableCell>
                                              <TableCell className="max-w-[120px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
                                                   {checkOutStudent.student
-                                                       ?.course_Year || "N/A"}
+                                                       .courseYear || "N/A"}
                                              </TableCell>
                                         </TableRow>
                                    ))}

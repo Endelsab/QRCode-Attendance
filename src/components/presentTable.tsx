@@ -22,7 +22,7 @@ export default function PresentTable() {
      } = useQuery({
           queryKey: ["GetTodaysAttendance"],
           queryFn: GetTodaysAttendance,
-          refetchInterval: 500,
+          refetchInterval: 2000,
      });
 
      if (isLoading) return <SkeletonCard />;
@@ -52,12 +52,13 @@ export default function PresentTable() {
                                    {presents.map((present) => (
                                         <TableRow key={present.id}>
                                              <TableCell className="font-medium max-w-[150px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                                                  {present.student?.fullname ||
+                                                  {present.student
+                                                       .studentFullname ||
                                                        "N/A"}
                                              </TableCell>
                                              <TableCell className="max-w-[120px] truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                                                  {present.student
-                                                       ?.course_Year || "N/A"}
+                                                  {present.student.courseYear ||
+                                                       "N/A"}
                                              </TableCell>
                                         </TableRow>
                                    ))}

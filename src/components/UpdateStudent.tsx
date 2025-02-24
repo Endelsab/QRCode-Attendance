@@ -19,11 +19,11 @@ import { Label } from "@/components/ui/label";
 import { EditStudent } from "@/app/actions/UpdateStudent";
 
 type Student = {
-     fullname: string;
+     studentFullname: string;
      courseYear: string;
      studentId: string;
-     parentsName: string;
-     email: string;
+     parentFullname: string;
+     parentEmail: string;
 };
 
 type UpdateStudentProps = {
@@ -34,11 +34,11 @@ type UpdateStudentProps = {
 
 function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
      const [formData, setFormData] = useState<Student>({
-          fullname: "",
+          studentFullname: "",
           courseYear: "",
           studentId: "",
-          parentsName: "",
-          email: "",
+          parentFullname: "",
+          parentEmail: "",
      });
 
      const [submitting, setSubmitting] = useState(false);
@@ -64,7 +64,7 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
                const result = await EditStudent(id, formData);
 
                if (result.success) {
-                    toast.success("Student updated successfully!");
+                    toast.success("Student updated successfully");
                     onClose();
                } else {
                     toast.error(result.error || "Failed to update student");
@@ -81,12 +81,14 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
           <div className="min-h-screen flex bg-gray gap-4 justify-center items-center">
                <Card className="w-[650px]">
                     <CardHeader>
-                         <CardTitle className="text-2xl">
-                              Update Student
-                         </CardTitle>
-                         <CardDescription>
-                              Modify student details and update QR Code
-                         </CardDescription>
+                         <div className="flex flex-col justify-center items-center">
+                              <CardTitle className="text-2xl">
+                                   Update Student
+                              </CardTitle>
+                              <CardDescription>
+                                   Modify student details and update QR Code
+                              </CardDescription>
+                         </div>
                     </CardHeader>
                     <div className="flex flex-row">
                          <CardContent>
@@ -95,7 +97,7 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
                                         {[
                                              {
                                                   label: "Fullname",
-                                                  name: "fullname",
+                                                  name: "studentFullname",
                                                   type: "text",
                                              },
                                              {
@@ -104,18 +106,18 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
                                                   type: "text",
                                              },
                                              {
-                                                  label: "Student ID",
+                                                  label: "Student Id",
                                                   name: "studentId",
                                                   type: "text",
                                              },
                                              {
                                                   label: "Parent's Name",
-                                                  name: "parentsName",
+                                                  name: "parentFullname",
                                                   type: "text",
                                              },
                                              {
                                                   label: "Parent's Email",
-                                                  name: "email",
+                                                  name: "parentEmail",
                                                   type: "email",
                                              },
                                         ].map(({ label, name, type }) => (
@@ -161,7 +163,7 @@ function UpdateStudent({ onClose, id, student }: UpdateStudentProps) {
                                    </div>
                               </div>
 
-                              <CardFooter className="flex gap-6 mt-5 justify-between">
+                              <CardFooter className="flex gap-6 mt-6 justify-between">
                                    <Button onClick={onClose}>Cancel</Button>
                                    <Button
                                         variant={"outline"}

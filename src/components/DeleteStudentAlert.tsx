@@ -19,7 +19,7 @@ type AlertType = {
      onClose: () => void;
      fullname: string;
      courseYear: string;
-     onConfirm: (id: string) => void;
+     onConfirm: (id: string) => Promise<void>;
 };
 
 const DeleteStudentAlert = ({
@@ -32,10 +32,16 @@ const DeleteStudentAlert = ({
 }: AlertType) => {
      const [loading, setLoading] = useState(false);
 
-     const handleDelete = async () => {
+     const handleConfirm = async () => {
           setLoading(true);
-          await onConfirm(id);
-          setLoading(false);
+
+          try {
+               await onConfirm(id);
+          } catch (error) {
+               console.log(error);
+          } finally {
+               setLoading(false);
+          }
      };
 
      return (
@@ -53,7 +59,7 @@ const DeleteStudentAlert = ({
                          <AlertDialogCancel onClick={onClose}>
                               Cancel
                          </AlertDialogCancel>
-                         <Button onClick={handleDelete} disabled={loading}>
+                         <Button onClick={handleConfirm} disabled={loading}>
                               {loading ? "Deleting..." : "Delete"}
                          </Button>
                     </AlertDialogFooter>

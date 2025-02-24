@@ -18,11 +18,11 @@ type EditDialogProps = {
 };
 
 type Student = {
-     fullname: string;
+     studentFullname: string;
      courseYear: string;
      studentId: string;
-     parentsName: string;
-     email: string;
+     parentFullname: string;
+     parentEmail: string;
 };
 
 function UpdateStudentCard({ isOpen, onClose, id }: EditDialogProps) {
@@ -37,16 +37,16 @@ function UpdateStudentCard({ isOpen, onClose, id }: EditDialogProps) {
 
                     if (studentData.success !== false) {
                          const mappedStudent = {
-                              fullname: studentData.student?.fullname || "",
-                              courseYear:
-                                   studentData.student?.course_Year || "",
-                              studentId: studentData.student?.studentID || "",
-                              parentsName:
-                                   studentData.student?.parents[0]?.parent
-                                        ?.fullname || "",
-                              email:
-                                   studentData.student?.parents[0]?.parent
-                                        ?.email || "",
+                              studentFullname:
+                                   studentData.student?.studentFullname || "",
+                              courseYear: studentData.student?.courseYear || "",
+                              studentId: studentData.student?.studentId || "",
+                              parentFullname:
+                                   studentData.student?.parent[0]
+                                        ?.parentFullname || "",
+                              parentEmail:
+                                   studentData.student?.parent[0]
+                                        ?.parentEmail || "",
                          };
                          setStudent(mappedStudent);
                     } else {
@@ -68,7 +68,9 @@ function UpdateStudentCard({ isOpen, onClose, id }: EditDialogProps) {
           <AlertDialog open={isOpen} onOpenChange={onClose}>
                <AlertDialogContent className="border-none bg-transparent">
                     <AlertDialogHeader>
-                         <AlertDialogTitle>Update Student</AlertDialogTitle>
+                         <AlertDialogTitle>
+                              <p className=" hidden">Update student</p>
+                         </AlertDialogTitle>
                     </AlertDialogHeader>
 
                     {loading ?

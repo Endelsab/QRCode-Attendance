@@ -56,10 +56,6 @@ export default function RootLayout({
                                         </div>
                                    </div>
                               </div>
-
-                              {/* <div className="basis-2/3 mt-5 px-4">
-                                   {children}
-                              </div> */}
                          </QueryProvider>
 
                          <Toaster />

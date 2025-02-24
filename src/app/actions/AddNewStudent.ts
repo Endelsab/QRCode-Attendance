@@ -18,8 +18,6 @@ export async function AddNewStudent({
      parentFullname,
      parentEmail,
 }: formData) {
-     await new Promise((resolve) => setTimeout(resolve, 1000));
-
      if (
           !studentFullname ||
           !courseYear ||
@@ -53,32 +51,24 @@ export async function AddNewStudent({
 
      try {
           const existingStudent = await prisma.student.findUnique({
-               where: { studentID: studentId },
+               where: { studentId },
           });
 
           if (existingStudent) {
                return {
                     success: false,
-                    message: "Student ID already exists.",
+                    message: "Student Id already exists.",
                     status: 409,
                };
           }
 
           await prisma.student.create({
                data: {
-                    fullname: studentFullname,
-                    course_Year: courseYear,
-                    studentID: studentId,
-
-                    parents: {
-                         create: {
-                              parent: {
-                                   create: {
-                                        fullname: parentFullname,
-                                        email: parentEmail,
-                                   },
-                              },
-                         },
+                    studentFullname,
+                    courseYear,
+                    studentId,
+                    parent: {
+                         create: { parentFullname, parentEmail },
                     },
                },
           });
@@ -90,15 +80,13 @@ export async function AddNewStudent({
                message: "Student added successfully !",
                status: 201,
           };
-     } catch (error: any) {
+     } catch (error) {
           console.error("Database Error:", error);
 
           return {
                success: false,
-               message:
-                    error.code === "P2002" ?
-                         "Student ID already exists."
-                    :    "Something went wrong. Please try again.",
+               message: "Unable to add new student",
+
                status: 500,
           };
      }

@@ -14,28 +14,34 @@ datasource db {
 }
 
 model Student {
+
   id          String   @id @default(cuid())
-  studentID   String   @unique
-  fullname    String
-  course_Year String
-  image       String?
+  studentId   String   @unique
+  studentFullname    String
+  courseYear String
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  status String @default("Absent")
+  status String @default("Checked-out")
+  
+  parent Parent[]
 
-  parents     ParentOnStudent[]
   attendances Attendance[]
 }
 
 model Parent {
   id        String   @id @default(cuid())
-  fullname  String
-  email     String   
+  parentFullname  String
+  parentEmail     String   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  students ParentOnStudent[]
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String @unique
+
+  
+  
 }
 
 model Attendance {
@@ -45,18 +51,10 @@ model Attendance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student   Student @relation(fields: [studentId], references: [studentID], onDelete: Cascade)
-  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String @unique
 
   @@unique([studentId, date])
 }
 
-model ParentOnStudent {
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  studentId String
 
-  parent   Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  parentId String
-
-  @@id([studentId, parentId])
-}
