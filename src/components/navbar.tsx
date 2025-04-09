@@ -17,7 +17,7 @@ function Navbar() {
 						<Button variant={"outline"}>Dashboard</Button>
 					</Link>
 
-					<Button>Logout</Button>
+				
 				</div>
 			</div>
 		</nav>
